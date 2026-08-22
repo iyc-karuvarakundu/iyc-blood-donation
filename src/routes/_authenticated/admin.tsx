@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { deleteDonor, listDonors } from "@/lib/donors.functions";
 import { bloodGroups } from "@/lib/coordinators";
@@ -61,6 +61,16 @@ function AdminPage() {
     void navigate({ to: "/auth", replace: true });
   }
 
+  useEffect(() => {
+    if (!data || data.isAdmin !== false) return;
+    void (async () => {
+      await queryClient.cancelQueries();
+      queryClient.clear();
+      await supabase.auth.signOut();
+      void navigate({ to: "/auth", replace: true });
+    })();
+  }, [data, queryClient, navigate]);
+
   function exportCsv() {
     const header = ["Name", "Phone", "Email", "Blood group", "District", "Place", "DOB", "Registered"];
     const rows = filtered.map((d) => [
@@ -100,18 +110,10 @@ function AdminPage() {
   if (!data?.isAdmin) {
     return (
       <div className="mx-auto max-w-2xl px-4 py-16">
-        <h1 className="font-display text-2xl font-bold text-primary">Access pending</h1>
-        <p className="mt-3 text-sm text-muted-foreground">
-          Your account is signed in but has not been granted admin access to the blood bank
-          registry yet. Ask an existing admin to approve your account.
+        <h1 className="font-display text-2xl font-bold text-primary">Access denied</h1>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Only authorized administrators can view the donor registry.
         </p>
-        <button
-          type="button"
-          onClick={signOut}
-          className="mt-6 rounded-md border border-border px-4 py-2 text-sm font-semibold"
-        >
-          Sign out
-        </button>
       </div>
     );
   }

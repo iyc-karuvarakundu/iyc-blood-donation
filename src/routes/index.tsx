@@ -54,25 +54,30 @@ function Index() {
           <p className="text-xs font-bold uppercase tracking-[0.3em] text-accent">
             Indian Youth Congress · Malappuram
           </p>
+
           <h1 className="mt-4 max-w-2xl font-display text-4xl font-bold text-primary-foreground sm:text-5xl">
-            Donate blood. Give someone one more tomorrow.
+           One donation can give someone one more tomorrow
           </h1>
+
           <p className="mt-5 max-w-xl text-base text-primary-foreground/85">
-            Our volunteers maintain a district-wide register of willing donors and connect
-            patients to a matching donor at any hour — free of cost, day or night.
+            A few minutes of your time can make a life-changing difference. Register as a voluntary
+            blood donor and help us connect patients in need with the right donor across Malappuram
+            — 24/7 and completely free.
           </p>
+
           <div className="mt-8 flex flex-wrap gap-3">
             <Link
               to="/donate"
               className="rounded-md bg-secondary px-6 py-3 font-display text-base font-bold text-secondary-foreground transition-opacity hover:opacity-90"
             >
-              Register as a donor
+              Register as a Donor
             </Link>
+
             <Link
               to="/need-blood"
               className="rounded-md border border-primary-foreground/40 bg-primary/40 px-6 py-3 font-display text-base font-bold text-primary-foreground backdrop-blur transition-colors hover:bg-primary/60"
             >
-              I need blood now
+              I Need Blood Now
             </Link>
           </div>
         </div>
@@ -83,8 +88,8 @@ function Index() {
           Every group matters
         </h2>
         <p className="mt-2 text-muted-foreground">
-          We keep donors registered across all eight blood groups, in every corner of
-          Malappuram district.
+          We keep donors registered across all eight blood groups, in every corner of Malappuram
+          district.
         </p>
         <ul className="mt-6 grid grid-cols-4 gap-3 sm:grid-cols-8">
           {bloodGroups.map((g) => (
@@ -100,9 +105,7 @@ function Index() {
 
       <section className="border-y border-border bg-muted/40">
         <div className="mx-auto max-w-6xl px-4 py-16">
-          <h2 className="font-display text-2xl font-bold text-primary sm:text-3xl">
-            How it works
-          </h2>
+          <h2 className="font-display text-2xl font-bold text-primary sm:text-3xl">How it works</h2>
           <ol className="mt-6 grid gap-5 md:grid-cols-3">
             {steps.map((s, i) => (
               <li key={s.title} className="rounded-xl border border-border bg-card p-6 shadow-card">

@@ -1,22 +1,29 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { Lock } from "lucide-react";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
+import {
+  ACCESS_DENIED_DETAIL,
+  ACCESS_DENIED_TITLE,
+  fetchIsAdmin,
+  isInvalidCredentialsError,
+} from "@/lib/admin-session";
 
 export const Route = createFileRoute("/auth")({
   ssr: false,
   head: () => ({
     meta: [
-      { title: "Coordinator Login | IYC Malappuram Blood Bank" },
+      { title: "Admin Login | IYC Malappuram Blood Bank" },
       {
         name: "description",
         content:
-          "Secure login for Indian Youth Congress Malappuram coordinators to access the blood donor registry.",
+          "Secure administrator login for Indian Youth Congress Malappuram Blood Bank coordinators.",
       },
-      { property: "og:title", content: "Coordinator Login | IYC Malappuram Blood Bank" },
+      { property: "og:title", content: "Admin Login | IYC Malappuram Blood Bank" },
       {
         property: "og:description",
-        content: "Authorised coordinators only. Donor data is confidential.",
+        content: "Authorised administrators only. Donor data is confidential.",
       },
       { name: "robots", content: "noindex" },
     ],
@@ -41,16 +48,42 @@ function AuthPage() {
   const navigate = useNavigate();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [denied, setDenied] = useState(false);
 
   useEffect(() => {
-    void supabase.auth.getSession().then(({ data }) => {
-      if (data.session) void navigate({ to: "/admin", replace: true });
+    let cancelled = false;
+
+    void supabase.auth.getSession().then(async ({ data }) => {
+      const userId = data.session?.user.id;
+      if (!userId) return;
+      try {
+        const isAdmin = await fetchIsAdmin(userId);
+        if (cancelled) return;
+        if (isAdmin) {
+          void navigate({ to: "/admin", replace: true });
+          return;
+        }
+        await supabase.auth.signOut();
+      } catch {
+        if (!cancelled) await supabase.auth.signOut();
+      }
     });
+
+    return () => {
+      cancelled = true;
+    };
   }, [navigate]);
+
+  async function denyAndSignOut() {
+    await supabase.auth.signOut();
+    setDenied(true);
+    setError("");
+  }
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError("");
+    setDenied(false);
     const raw = Object.fromEntries(new FormData(event.currentTarget)) as Record<string, string>;
     const parsed = credentials.safeParse(raw);
     if (!parsed.success) {
@@ -59,23 +92,61 @@ function AuthPage() {
     }
 
     setBusy(true);
-    const { error: signInError } = await supabase.auth.signInWithPassword({
-      email: toEmail(parsed.data.username),
-      password: parsed.data.password,
-    });
-    setBusy(false);
-    if (signInError) {
-      setError("Wrong username or password");
-      return;
+    try {
+      const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+        email: toEmail(parsed.data.username),
+        password: parsed.data.password,
+      });
+
+      if (signInError) {
+        await supabase.auth.signOut();
+        if (isInvalidCredentialsError(signInError)) {
+          setError("Wrong username or password.");
+        } else {
+          setError("Unable to sign in right now. Please try again.");
+        }
+        return;
+      }
+
+      const userId = signInData.user?.id;
+      if (!userId) {
+        await supabase.auth.signOut();
+        setError("Unable to sign in right now. Please try again.");
+        return;
+      }
+
+      let isAdmin = false;
+      try {
+        isAdmin = await fetchIsAdmin(userId);
+      } catch {
+        await supabase.auth.signOut();
+        setError("Unable to sign in right now. Please try again.");
+        return;
+      }
+
+      if (!isAdmin) {
+        await denyAndSignOut();
+        return;
+      }
+
+      void navigate({ to: "/admin", replace: true });
+    } catch {
+      await supabase.auth.signOut();
+      setError("Unable to sign in right now. Please try again.");
+    } finally {
+      setBusy(false);
     }
-    void navigate({ to: "/admin", replace: true });
   }
 
   return (
     <div className="mx-auto max-w-md px-4 py-16">
-      <h1 className="font-display text-2xl font-bold text-primary">Coordinator login</h1>
+      <div className="flex items-center gap-2 text-primary">
+        <Lock className="h-5 w-5" aria-hidden />
+        <h1 className="font-display text-2xl font-bold">Admin login</h1>
+      </div>
       <p className="mt-2 text-sm text-muted-foreground">
-        Donor data is confidential and visible only to authorised admins.
+        This portal is for authorised IYC Malappuram Blood Bank administrators and coordinators
+        only. There is no public signup.
       </p>
 
       <form
@@ -107,6 +178,16 @@ function AuthPage() {
             className="mt-1.5 w-full rounded-md border border-input bg-background px-3 py-2.5 text-sm outline-none focus:border-ring focus:ring-2 focus:ring-ring/30"
           />
         </div>
+
+        {denied && (
+          <div
+            role="alert"
+            className="rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive"
+          >
+            <p className="font-semibold">{ACCESS_DENIED_TITLE}</p>
+            <p className="mt-1 font-normal text-destructive/90">{ACCESS_DENIED_DETAIL}</p>
+          </div>
+        )}
 
         {error && (
           <p className="rounded-md bg-destructive/10 px-3 py-2 text-sm font-semibold text-destructive">

@@ -23,32 +23,11 @@ export const coordinators: Coordinator[] = [
     tel: "+919645071082",
   },
   {
-    name: "Mehroof",
-    area: "Manjeri",
-    display: "+91 99954 15057",
-    wa: "919995415057",
-    tel: "+919995415057",
-  },
-  {
-    name: "Shafeek",
-    area: "Perinthalmanna",
-    display: "+91 96454 94884",
-    wa: "919645494884",
-    tel: "+919645494884",
-  },
-  {
-    name: "Muhammed Riyas MT",
-    area: "Malappuram",
-    display: "+91 99476 00008",
-    wa: "919947600008",
-    tel: "+919947600008",
-  },
-  {
-    name: "Irshad",
-    area: "Ariyanthodika",
-    display: "+91 99479 30324",
-    wa: "919947930324",
-    tel: "+919947930324",
+    name: "Rashid Chola",
+    area: "",
+    display: "+91 8129554442",
+    wa: "918129554442",
+    tel: "+918129554442",
   },
 ];
 
