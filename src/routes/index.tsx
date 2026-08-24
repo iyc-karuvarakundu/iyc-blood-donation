@@ -1,3 +1,5 @@
+import action from '@/assets/action.webp';
+import hero from "@/assets/hero.webp";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   ArrowRight,
@@ -11,7 +13,6 @@ import {
   Syringe,
   UsersRound,
 } from "lucide-react";
-import hero from "@/assets/hero-blood-camp.jpg";
 import logo from "@/assets/iyc-logo.png";
 import { WhatsappContacts } from "@/components/whatsapp-contacts";
 import { bloodGroups } from "@/lib/coordinators";
@@ -548,7 +549,7 @@ function Index() {
           </div>
           <div className="relative overflow-hidden rounded-3xl shadow-lift">
             <img
-              src={hero}
+              src={action}
               alt="A donor, volunteer, and medical professional at a blood donation camp"
               width={1920}
               height={1088}
@@ -643,3 +644,9 @@ function Index() {
     </div>
   );
 }
+
+
+
+
+
+
