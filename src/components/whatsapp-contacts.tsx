@@ -1,17 +1,27 @@
 import { coordinators, whatsappHelpLink } from "@/lib/coordinators";
 
-export function WhatsappContacts({ group }: { group?: string | undefined }) {
+export function WhatsappContacts({
+  group,
+  compact = false,
+}: {
+  group?: string | undefined;
+  compact?: boolean;
+}) {
   return (
-    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      {coordinators.map((c) => (
+    <div
+      className={compact ? "grid gap-4 sm:grid-cols-2" : "grid gap-4 sm:grid-cols-2 lg:grid-cols-3"}
+    >
+      {coordinators.map((c, index) => (
         <article
           key={c.wa}
-          className="rounded-xl border border-border bg-card p-5 shadow-card"
+          className={`rounded-xl border border-border bg-card p-5 shadow-card ${
+            compact && coordinators.length % 2 === 1 && index === coordinators.length - 1
+              ? "sm:col-span-2"
+              : ""
+          }`}
         >
           <h3 className="font-display text-lg font-bold text-primary">{c.name}</h3>
-          <p className="text-sm font-semibold uppercase tracking-wide text-secondary">
-            {c.area}
-          </p>
+          <p className="text-sm font-semibold uppercase tracking-wide text-secondary">{c.area}</p>
           <a
             href={`tel:${c.tel}`}
             className="mt-3 block text-sm font-semibold text-foreground hover:underline"
