@@ -209,13 +209,6 @@ function Index() {
         <div className="relative mx-auto flex min-h-[640px] max-w-6xl items-center px-4 py-24 sm:min-h-[700px] sm:py-32">
           <div className="max-w-3xl">
             <div className="inline-flex animate-in fade-in slide-in-from-bottom-3 items-center gap-3 duration-700">
-              <img
-                src={logo}
-                alt="Indian Youth Congress logo"
-                width={52}
-                height={52}
-                className="h-12 w-12 rounded-full bg-primary-foreground/10 p-1.5 ring-1 ring-primary-foreground/25"
-              />
               <p className="text-xs font-bold uppercase tracking-[0.27em] text-accent sm:text-sm">
                 Indian Youth Congress · Malappuram
               </p>
@@ -295,7 +288,6 @@ function Index() {
             <div className="relative rounded-3xl border border-border bg-card p-8 shadow-lift">
               <div className="absolute right-0 top-0 h-20 w-20 rounded-bl-[2.5rem] rounded-tr-3xl bg-secondary/10" />
               <img
-                src={logo}
                 alt="Indian Youth Congress logo"
                 width={180}
                 height={180}
@@ -377,7 +369,6 @@ function Index() {
                   </>
                 ) : (
                   <img
-                    src={logo}
                     alt=""
                     width={180}
                     height={180}
@@ -536,7 +527,6 @@ function Index() {
             />
             <div className="mt-8 flex items-start gap-4 rounded-xl border border-border bg-card p-5 shadow-card">
               <img
-                src={logo}
                 alt="Indian Youth Congress logo"
                 width={56}
                 height={56}
@@ -644,6 +634,10 @@ function Index() {
     </div>
   );
 }
+
+
+
+
 
 
 
