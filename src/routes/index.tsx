@@ -1,5 +1,9 @@
 import action from '@/assets/action.webp';
 import hero from "@/assets/hero.webp";
+import hero2 from "@/assets/hero-2.webp";
+import hero3 from "@/assets/hero-3.webp";
+import banner from "@/assets/banner.webp";
+import { useEffect, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   ArrowRight,
@@ -36,6 +40,20 @@ export const Route = createFileRoute("/")({
   }),
   component: Index,
 });
+
+const heroSlides = [
+ 
+  {
+    src: hero2,
+    alt: "Indian Youth Congress rally with the national flag",
+    position: "center 20%",
+  },
+  {
+    src: hero3,
+    alt: "Indian Youth Congress leaders addressing a gathering",
+    position: "center 30%",
+  },
+];
 
 const reasons = [
   {
@@ -161,8 +179,45 @@ function SectionHeading({
 }
 
 function Index() {
+    const [slide, setSlide] = useState(0);
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      setSlide((s) => (s + 1) % heroSlides.length);
+    }, 5000);
+    return () => clearInterval(id);
+  }, []);
+
+  const [showSplash, setShowSplash] = useState(true);
+
+   
+  useEffect(() => {
+    if (!showSplash) return;
+    const t = setTimeout(() => setShowSplash(false), 5000);
+    return () => clearTimeout(t);
+  }, [showSplash]);
+
   return (
     <div className="overflow-hidden">
+            {showSplash && (
+        <div
+          onClick={() => setShowSplash(false)}
+          className="fixed inset-0 z-[100] flex cursor-pointer items-center justify-center bg-white animate-in fade-in duration-500"
+        >
+          <img
+            src={banner}
+            alt="Malappuram Blood Bank — Donate Blood, Save Lives"
+            className="max-h-full w-full object-contain"
+          />
+          <button
+            type="button"
+            onClick={() => setShowSplash(false)}
+            className="absolute bottom-6 right-6 rounded-md bg-primary px-4 py-2 text-sm font-bold text-primary-foreground shadow-lift"
+          >
+            Skip
+          </button>
+        </div>
+      )}
       <style>{`
         @keyframes home-hero-drift {
           from { transform: scale(1.04) translate3d(-0.6%, -0.4%, 0); }
@@ -189,13 +244,19 @@ function Index() {
       `}</style>
 
       <section className="relative isolate min-h-[640px] overflow-hidden sm:min-h-[700px]">
-        <img
-          src={hero}
-          alt="Volunteers and a nurse at an Indian Youth Congress blood donation camp"
-          width={1920}
-          height={1088}
-          className="absolute inset-0 h-full w-full object-cover motion-safe:animate-[home-hero-drift_16s_ease-in-out_infinite_alternate]"
-        />
+               {heroSlides.map((s, i) => (
+          <img
+            key={i}
+            src={s.src}
+            alt={s.alt}
+            width={1920}
+            height={1088}
+            style={{ objectPosition: s.position }}
+            className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ease-in-out motion-safe:animate-[home-hero-drift_16s_ease-in-out_infinite_alternate] ${
+              i === slide ? "opacity-100" : "opacity-0"
+            }`}
+          />
+        ))}
         <div className="absolute inset-0 hero-overlay" />
         <Droplet
           className="pointer-events-none absolute right-[8%] top-24 h-16 w-16 text-accent/30 motion-safe:animate-[home-float_6s_ease-in-out_infinite] sm:h-24 sm:w-24"
