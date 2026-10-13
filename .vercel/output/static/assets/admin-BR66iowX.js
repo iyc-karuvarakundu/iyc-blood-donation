@@ -1,0 +1,1 @@
+import{j as e}from"./index-DwaJdKZR.js";var t=e(),n=()=>(0,t.jsxs)(`div`,{className:`mx-auto max-w-2xl px-4 py-16`,children:[(0,t.jsx)(`h1`,{className:`font-display text-2xl font-bold text-primary`,children:`Could not load the registry`}),(0,t.jsx)(`p`,{className:`mt-2 text-sm text-muted-foreground`,children:`Please refresh and try again.`})]});export{n as errorComponent};

@@ -1,36 +1,35 @@
-import action from '@/assets/action.webp';
-import hero from "@/assets/hero.webp";
-import hero2 from "@/assets/hero-2.webp";
-import hero3 from "@/assets/hero-3.webp";
-import banner from "@/assets/banner.webp";
-import { useEffect, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   ArrowRight,
   CheckCircle2,
-  Clock3,
-  Droplet,
   HeartHandshake,
   HeartPulse,
-  MapPin,
   ShieldCheck,
-  Syringe,
   UsersRound,
+  type LucideIcon,
 } from "lucide-react";
-import logo from "@/assets/iyc-logo.png";
+import hero from "@/assets/hero.webp";
+import iycLogo from "@/assets/iyc-logo.png";
+import action from "@/assets/action.webp";
 import { WhatsappContacts } from "@/components/whatsapp-contacts";
 import { bloodGroups } from "@/lib/coordinators";
 
 export const Route = createFileRoute("/")({
+  codeSplitGroupings: [],
   head: () => ({
     meta: [
-      { title: "Blood Donation — Indian Youth Congress Malappuram" },
+      {
+        title: "Blood Donation — Indian Youth Congress Malappuram",
+      },
       {
         name: "description",
         content:
-          "A volunteer blood donor network by Indian Youth Congress Malappuram. Register as a donor, or WhatsApp a coordinator when you urgently need blood.",
+          "A volunteer blood donor network by Indian Youth Congress Malappuram. Register as a donor, or contact a coordinator when you urgently need blood.",
       },
-      { property: "og:title", content: "Blood Donation — Indian Youth Congress Malappuram" },
+      {
+        property: "og:title",
+        content: "Blood Donation — Indian Youth Congress Malappuram",
+      },
       {
         property: "og:description",
         content:
@@ -41,436 +40,134 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-const heroSlides = [
- 
-  {
-    src: hero2,
-    alt: "Indian Youth Congress rally with the national flag",
-    position: "center 20%",
-  },
-  {
-    src: hero3,
-    alt: "Indian Youth Congress leaders addressing a gathering",
-    position: "center 30%",
-  },
-];
-
-const reasons = [
-  {
-    icon: HeartPulse,
-    title: "Every drop matters",
-    body: "A voluntary donor can be there when a patient and their family need support the most.",
-  },
-  {
-    icon: Syringe,
-    title: "Help during emergencies",
-    body: "Blood can be needed in emergencies, accidents, surgeries, and ongoing medical care.",
-  },
-  {
-    icon: HeartHandshake,
-    title: "Support patients & families",
-    body: "A timely connection can ease the search for help during a difficult moment.",
-  },
-  {
-    icon: UsersRound,
-    title: "Be a voluntary donor",
-    body: "Join a local network of people willing to step forward when their blood group is needed.",
-  },
-];
-
 const steps = [
   {
     number: "01",
-    title: "Register",
-    body: "Share your donor details, blood group, and place through our confidential registration form.",
+    title: "Register once",
+    body: "Add your name, blood group and place to our confidential donor register.",
   },
   {
     number: "02",
-    title: "Connect",
-    body: "When a matching group is needed, authorised coordinators can contact suitable donors.",
+    title: "We contact you",
+    body: "When a patient needs your blood group, a coordinator contacts you directly.",
   },
   {
     number: "03",
-    title: "Help save a life",
-    body: "A voluntary donation can make a meaningful difference to someone in need.",
+    title: "You help save a life",
+    body: "Your voluntary donation can make a life-changing difference to someone in need.",
   },
 ];
 
-const trustPoints = [
+const reasons: { icon: LucideIcon; title: string; body: string }[] = [
   {
-    icon: UsersRound,
-    title: "Voluntary registration",
-    body: "Donors choose to join the network through the dedicated registration page.",
+    icon: HeartPulse,
+    title: "Every drop matters",
+    body: "A voluntary donor can offer meaningful support when a patient and family need it most.",
   },
   {
-    icon: ShieldCheck,
-    title: "Confidential details",
-    body: "Donor details are handled confidentially and are available only to authorised coordinators.",
+    icon: UsersRound,
+    title: "A local network",
+    body: "A shared donor register helps authorised coordinators look for suitable support across Malappuram.",
   },
   {
     icon: HeartHandshake,
-    title: "Coordinator-assisted help",
-    body: "People seeking blood can reach local coordinators directly for assistance.",
-  },
-  {
-    icon: MapPin,
-    title: "Focused on Malappuram",
-    body: "The network is built to connect volunteers and people seeking help across Malappuram.",
+    title: "Community care",
+    body: "Small acts of service can make the search for blood feel less difficult during an emergency.",
   },
 ];
-
-const iycActionCards = [
-  {
-    icon: UsersRound,
-    title: "Community",
-    body: "Youth coming together to support people and communities.",
-  },
-  {
-    icon: HeartHandshake,
-    title: "Service",
-    body: "Turning volunteer energy into meaningful action.",
-  },
-  {
-    icon: Droplet,
-    title: "Blood Donation",
-    body: "Connecting voluntary donors with people who urgently need blood.",
-    featured: true,
-  },
-];
-
-function SectionHeading({
-  eyebrow,
-  title,
-  description,
-  centered = false,
-  light = false,
-}: {
-  eyebrow: string;
-  title: string;
-  description: string;
-  centered?: boolean;
-  light?: boolean;
-}) {
-  return (
-    <div className={centered ? "mx-auto max-w-2xl text-center" : "max-w-2xl"}>
-      <p
-        className={`text-xs font-bold uppercase tracking-[0.25em] ${
-          light ? "text-accent" : "text-secondary"
-        }`}
-      >
-        {eyebrow}
-      </p>
-      <h2
-        className={`mt-3 font-display text-3xl font-bold sm:text-4xl ${
-          light ? "text-primary-foreground" : "text-primary"
-        }`}
-      >
-        {title}
-      </h2>
-      <p
-        className={`mt-4 text-base leading-7 ${
-          light ? "text-primary-foreground/75" : "text-muted-foreground"
-        }`}
-      >
-        {description}
-      </p>
-    </div>
-  );
-}
 
 function Index() {
-    const [slide, setSlide] = useState(0);
-
-  useEffect(() => {
-    const id = setInterval(() => {
-      setSlide((s) => (s + 1) % heroSlides.length);
-    }, 5000);
-    return () => clearInterval(id);
-  }, []);
-
-  const [showSplash, setShowSplash] = useState(true);
-
-   
-  useEffect(() => {
-    if (!showSplash) return;
-    const t = setTimeout(() => setShowSplash(false), 5000);
-    return () => clearTimeout(t);
-  }, [showSplash]);
-
   return (
     <div className="overflow-hidden">
-            {showSplash && (
-        <div
-          onClick={() => setShowSplash(false)}
-          className="fixed inset-0 z-[100] flex cursor-pointer items-center justify-center bg-white animate-in fade-in duration-500"
-        >
-          <img
-            src={banner}
-            alt="Malappuram Blood Bank — Donate Blood, Save Lives"
-            className="max-h-full w-full object-contain"
-          />
-          <button
-            type="button"
-            onClick={() => setShowSplash(false)}
-            className="absolute bottom-6 right-6 rounded-md bg-primary px-4 py-2 text-sm font-bold text-primary-foreground shadow-lift"
-          >
-            Skip
-          </button>
-        </div>
-      )}
-      <style>{`
-        @keyframes home-hero-drift {
-          from { transform: scale(1.04) translate3d(-0.6%, -0.4%, 0); }
-          to { transform: scale(1.1) translate3d(0.6%, 0.4%, 0); }
-        }
-        @keyframes home-float {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-10px); }
-        }
-        @keyframes home-section-reveal {
-          from { transform: translateY(18px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        @supports (animation-timeline: view()) {
-          .home-reveal {
-            animation: home-section-reveal linear both;
-            animation-timeline: view();
-            animation-range: entry 0% cover 28%;
-          }
-        }
-        @media (prefers-reduced-motion: reduce) {
-          .home-reveal { animation: none !important; }
-        }
-      `}</style>
+      {/* HERO */}
+      <section className="relative isolate min-h-155 overflow-hidden">
+        <img
+          src={hero}
+          alt="Volunteers and a nurse at an Indian Youth Congress blood donation camp"
+          width={1920}
+          height={1088}
+          className="absolute inset-0 h-full w-full object-cover"
+        />
 
-      <section className="relative isolate min-h-[640px] overflow-hidden sm:min-h-[700px]">
-               {heroSlides.map((s, i) => (
-          <img
-            key={i}
-            src={s.src}
-            alt={s.alt}
-            width={1920}
-            height={1088}
-            style={{ objectPosition: s.position }}
-            className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ease-in-out motion-safe:animate-[home-hero-drift_16s_ease-in-out_infinite_alternate] ${
-              i === slide ? "opacity-100" : "opacity-0"
-            }`}
-          />
-        ))}
         <div className="absolute inset-0 hero-overlay" />
-        <Droplet
-          className="pointer-events-none absolute right-[8%] top-24 h-16 w-16 text-accent/30 motion-safe:animate-[home-float_6s_ease-in-out_infinite] sm:h-24 sm:w-24"
-          aria-hidden
-        />
-        <Droplet
-          className="pointer-events-none absolute bottom-16 right-[24%] h-8 w-8 text-primary-foreground/20 motion-safe:animate-[home-float_7s_ease-in-out_infinite]"
-          aria-hidden
-        />
 
-        <div className="relative mx-auto flex min-h-[640px] max-w-6xl items-center px-4 py-24 sm:min-h-[700px] sm:py-32">
+        <div className="relative mx-auto flex min-h-155 max-w-6xl items-center px-4 py-24 sm:py-32 lg:py-40">
           <div className="max-w-3xl">
-            <div className="inline-flex animate-in fade-in slide-in-from-bottom-3 items-center gap-3 duration-700">
-              <p className="text-xs font-bold uppercase tracking-[0.27em] text-accent sm:text-sm">
-                Indian Youth Congress · Malappuram
-              </p>
-            </div>
+            <p className="text-xs font-bold uppercase tracking-[0.3em] text-accent sm:text-sm">
+              Indian Youth Congress · Malappuram
+            </p>
 
-            <h1 className="mt-7 animate-in fade-in slide-in-from-bottom-4 font-display text-4xl font-bold leading-[1.05] text-primary-foreground duration-700 sm:text-6xl lg:text-7xl">
-              One donation can give someone another tomorrow.
+            <h1 className="mt-4 max-w-3xl font-display text-4xl font-bold leading-tight text-primary-foreground sm:text-5xl lg:text-6xl">
+              One donation can give someone one more tomorrow.
             </h1>
 
-            <p className="mt-6 max-w-2xl animate-in fade-in slide-in-from-bottom-5 text-base leading-7 text-primary-foreground/85 delay-150 duration-700 sm:text-lg">
-              A blood donation initiative by Indian Youth Congress Malappuram, connecting voluntary
-              blood donors with people who need help — with community, care, and compassion at its
-              heart.
+            <p className="mt-6 max-w-2xl text-base leading-7 text-primary-foreground/90 sm:text-lg sm:leading-8">
+              A few minutes of your time can make a life-changing difference. Register as a
+              voluntary blood donor and help us connect people in need with possible donor support
+              across Malappuram.
             </p>
 
-            <div className="mt-9 flex animate-in fade-in slide-in-from-bottom-5 flex-col gap-3 delay-200 duration-700 sm:flex-row">
+            <div className="mt-8 flex flex-wrap gap-3">
               <Link
                 to="/donate"
-                className="group inline-flex items-center justify-center gap-2 rounded-md bg-secondary px-6 py-3.5 font-display text-base font-bold text-secondary-foreground shadow-lift transition-all hover:-translate-y-0.5 hover:opacity-90"
+                className="rounded-md bg-secondary px-6 py-3 font-display text-base font-bold text-secondary-foreground transition-all hover:-translate-y-0.5 hover:opacity-90"
               >
                 Become a Donor
-                <ArrowRight
-                  className="h-4 w-4 transition-transform group-hover:translate-x-1"
-                  aria-hidden
-                />
               </Link>
+
               <Link
                 to="/need-blood"
-                className="group inline-flex items-center justify-center gap-2 rounded-md border border-primary-foreground/35 bg-primary/35 px-6 py-3.5 font-display text-base font-bold text-primary-foreground backdrop-blur-sm transition-all hover:-translate-y-0.5 hover:bg-primary/55"
+                className="rounded-md border border-primary-foreground/40 bg-primary/40 px-6 py-3 font-display text-base font-bold text-primary-foreground backdrop-blur transition-all hover:-translate-y-0.5 hover:bg-primary/60"
               >
-                Need Blood Now
-                <ArrowRight
-                  className="h-4 w-4 transition-transform group-hover:translate-x-1"
-                  aria-hidden
-                />
+                I Need Blood Now
               </Link>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="home-reveal relative border-b border-border bg-primary px-4 py-12 text-primary-foreground sm:py-14">
-        <div className="absolute inset-x-0 top-0 h-1 tricolour-rule" />
-        <div className="mx-auto grid max-w-6xl gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          <div className="border-primary-foreground/15 lg:border-r lg:pr-6">
-            <p className="font-display text-4xl font-bold text-accent">8</p>
-            <p className="mt-1 text-sm font-semibold">Blood groups</p>
-            <p className="mt-1 text-xs leading-5 text-primary-foreground/65">
-              Included in the donor network.
-            </p>
-          </div>
-          <div className="border-primary-foreground/15 lg:border-r lg:pr-6">
-            <p className="font-display text-xl font-bold">Voluntary registry</p>
-            <p className="mt-2 text-xs leading-5 text-primary-foreground/65">
-              A dedicated place for willing donors to register.
-            </p>
-          </div>
-          <div className="border-primary-foreground/15 lg:border-r lg:pr-6">
-            <p className="font-display text-xl font-bold">Local support</p>
-            <p className="mt-2 text-xs leading-5 text-primary-foreground/65">
-              Focused on connecting people across Malappuram.
-            </p>
-          </div>
-          <div>
-            <p className="font-display text-xl font-bold">Urgent help</p>
-            <p className="mt-2 text-xs leading-5 text-primary-foreground/65">
-              Coordinators can be contacted directly when blood is needed.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <section className="home-reveal mx-auto max-w-6xl px-4 py-20 sm:py-28">
-        <div className="grid items-center gap-12 lg:grid-cols-[0.85fr_1.15fr]">
-          <div className="relative mx-auto w-full max-w-sm">
-            <div className="absolute -inset-5 rounded-[2rem] bg-accent/15 blur-2xl" />
-            <div className="relative rounded-3xl border border-border bg-card p-8 shadow-lift">
-              <div className="absolute right-0 top-0 h-20 w-20 rounded-bl-[2.5rem] rounded-tr-3xl bg-secondary/10" />
-              <img
-                alt="Indian Youth Congress logo"
-                width={180}
-                height={180}
-                className="mx-auto h-40 w-40 object-contain sm:h-44 sm:w-44"
-              />
-              <div className="mt-7 h-1 tricolour-rule" />
-              <p className="mt-5 text-center text-xs font-bold uppercase tracking-[0.22em] text-secondary">
-                Indian Youth Congress
-              </p>
-            </div>
-          </div>
-          <div>
-            <SectionHeading
-              eyebrow="Indian Youth Congress · Malappuram"
-              title="Youth participation, community engagement, and service."
-              description="Indian Youth Congress (IYC) is the youth wing of the Indian National Congress. It brings together the energy of young people with a commitment to community participation and service. In Malappuram, that spirit of volunteering extends to helping people in critical moments through voluntary blood donation and emergency blood support."
-            />
-            <div className="mt-7 grid gap-3 sm:grid-cols-2">
-              {[
-                "Volunteer participation",
-                "Community-oriented support",
-                "Blood donation awareness",
-                "Emergency assistance",
-              ].map((item) => (
-                <div
-                  key={item}
-                  className="flex items-center gap-3 rounded-lg bg-muted/60 px-4 py-3 text-sm font-semibold text-foreground"
-                >
-                  <CheckCircle2 className="h-4 w-4 shrink-0 text-success" aria-hidden />
-                  {item}
-                </div>
-              ))}
-            </div>
-            <Link
-              to="/about"
-              className="group mt-8 inline-flex items-center gap-2 text-sm font-bold text-primary transition-colors hover:text-secondary"
-            >
-              Learn more about IYC
-              <ArrowRight
-                className="h-4 w-4 transition-transform group-hover:translate-x-1"
-                aria-hidden
-              />
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      <section className="home-reveal relative overflow-hidden bg-primary px-4 py-20 text-primary-foreground sm:py-28">
-        <div className="absolute inset-x-0 top-0 h-1 tricolour-rule" />
-        <div className="pointer-events-none absolute -right-20 top-1/2 h-72 w-72 -translate-y-1/2 rounded-full bg-success/15 blur-3xl" />
-        <div className="relative mx-auto max-w-6xl">
-          <SectionHeading
-            eyebrow="IYC in action"
-            title="From youth participation to community service."
-            description="The IYC Malappuram blood donation initiative keeps its focus on a direct, practical form of service: making it easier for volunteers to step forward when someone needs blood."
-            centered
-            light
+      {/* IYC MALAPPURAM */}
+      <section className="border-b border-border bg-primary px-4 py-12 text-primary-foreground sm:py-16">
+        <div className="mx-auto grid max-w-6xl items-center gap-8 md:grid-cols-[auto_1fr]">
+          <img
+            src={iycLogo}
+            alt="Indian Youth Congress logo"
+            width={92}
+            height={92}
+            className="h-20 w-20 rounded-full bg-primary-foreground/10 p-2 ring-1 ring-primary-foreground/20"
           />
-          <div className="mt-12 grid gap-5 md:grid-cols-3">
-            {iycActionCards.map(({ icon: Icon, title, body, featured }) => (
-              <article
-                key={title}
-                className={
-                  featured
-                    ? "group relative isolate min-h-72 overflow-hidden rounded-2xl border border-primary-foreground/20 p-7 shadow-lift"
-                    : "card-hover group relative min-h-72 overflow-hidden rounded-2xl border border-primary-foreground/15 bg-primary-foreground/10 p-7 backdrop-blur"
-                }
-              >
-                {featured ? (
-                  <>
-                    <img
-                      src={hero}
-                      alt="Volunteers at a blood donation camp"
-                      width={1920}
-                      height={1088}
-                      className="absolute inset-0 -z-20 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-                    />
-                    <div className="absolute inset-0 -z-10 bg-primary/85" />
-                  </>
-                ) : (
-                  <img
-                    alt=""
-                    width={180}
-                    height={180}
-                    className="pointer-events-none absolute -bottom-12 -right-12 h-48 w-48 opacity-15 transition-transform duration-500 group-hover:scale-110"
-                  />
-                )}
-                <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-accent/15 text-accent ring-1 ring-accent/25">
-                  <Icon className="h-6 w-6" aria-hidden />
-                </div>
-                <div className="absolute inset-x-7 bottom-7">
-                  <p className="text-xs font-bold uppercase tracking-[0.22em] text-accent">
-                    IYC Malappuram
-                  </p>
-                  <h3 className="mt-3 font-display text-2xl font-bold">{title}</h3>
-                  <p className="mt-3 max-w-sm text-sm leading-6 text-primary-foreground/75">
-                    {body}
-                  </p>
-                </div>
-              </article>
-            ))}
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.25em] text-accent">
+              IYC Malappuram
+            </p>
+            <h2 className="mt-2 font-display text-2xl font-bold sm:text-3xl">
+              Youth participation, community service, and blood donation.
+            </h2>
+            <p className="mt-3 max-w-3xl leading-7 text-primary-foreground/75">
+              This initiative carries the community spirit of Indian Youth Congress into a practical
+              local service: helping voluntary donors and people seeking blood find a clearer path
+              to one another.
+            </p>
           </div>
         </div>
       </section>
 
-      <section className="home-reveal border-y border-border bg-muted/45 px-4 py-20 sm:py-28">
+      {/* WHY BLOOD DONATION MATTERS */}
+      <section className="border-b border-border bg-muted/45 px-4 py-20 sm:py-24">
         <div className="mx-auto max-w-6xl">
-          <SectionHeading
-            eyebrow="Why blood donation matters"
-            title="Your willingness to help can reach far beyond one moment."
-            description="Blood is needed in many critical situations. By joining as a voluntary donor, you make it easier for coordinators to reach out when a matching blood group may be needed."
-            centered
-          />
-          <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          <p className="text-xs font-bold uppercase tracking-[0.25em] text-secondary">
+            Why blood donation matters
+          </p>
+          <h2 className="mt-2 max-w-2xl font-display text-3xl font-bold text-primary sm:text-4xl">
+            Your willingness to help can reach far beyond one moment.
+          </h2>
+          <div className="mt-10 grid gap-5 md:grid-cols-3">
             {reasons.map(({ icon: Icon, title, body }) => (
               <article
                 key={title}
                 className="card-hover rounded-xl border border-border bg-card p-6 shadow-card"
               >
-                <div className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-secondary/10 text-secondary">
-                  <Icon className="h-5 w-5" aria-hidden />
-                </div>
+                <Icon className="h-6 w-6 text-secondary" aria-hidden />
                 <h3 className="mt-5 font-display text-xl font-bold text-primary">{title}</h3>
                 <p className="mt-3 text-sm leading-6 text-muted-foreground">{body}</p>
               </article>
@@ -479,229 +176,204 @@ function Index() {
         </div>
       </section>
 
-      <section className="home-reveal mx-auto max-w-6xl px-4 py-20 sm:py-28">
-        <SectionHeading
-          eyebrow="The IYC blood network"
-          title="A simple path from willingness to help."
-          description="The network is designed to make it clear how donors can register and how people seeking blood can reach the coordinator team."
-          centered
-        />
-        <ol className="relative mt-12 grid gap-5 md:grid-cols-3">
-          <span
-            className="absolute left-[16%] right-[16%] top-11 hidden h-px bg-border md:block"
-            aria-hidden
-          />
-          {steps.map((step) => (
-            <li
-              key={step.number}
-              className="card-hover relative rounded-2xl border border-border bg-card p-7 shadow-card"
-            >
-              <span className="relative inline-flex h-12 min-w-12 items-center justify-center rounded-full bg-secondary font-display text-lg font-bold text-secondary-foreground ring-8 ring-background">
-                {step.number}
-              </span>
-              <p className="mt-7 text-xs font-bold uppercase tracking-[0.22em] text-secondary">
-                Step {step.number}
-              </p>
-              <h3 className="mt-2 font-display text-2xl font-bold text-primary">{step.title}</h3>
-              <p className="mt-3 text-sm leading-6 text-muted-foreground">{step.body}</p>
+      {/* ABOUT OUR PROGRAM */}
+      <section className="mx-auto grid max-w-6xl items-center gap-12 px-4 py-20 sm:py-28 lg:grid-cols-[1.05fr_0.95fr]">
+        <div>
+          <p className="text-xs font-bold uppercase tracking-[0.25em] text-secondary">
+            Our community initiative
+          </p>
+          <h2 className="mt-3 max-w-xl font-display text-3xl font-bold text-primary sm:text-4xl">
+            Connecting Donors With Those Who Need Them
+          </h2>
+          <p className="mt-5 text-base leading-7 text-muted-foreground">
+            This initiative is a community-focused blood donor network supported by Indian Youth
+            Congress, Malappuram, created to help connect voluntary blood donors with people who
+            urgently need blood.
+          </p>
+          <ul className="mt-6 space-y-3 text-sm leading-6 text-foreground/80">
+            <li className="flex gap-3">
+              <CheckCircle2 className="mt-1 h-4 w-4 shrink-0 text-success" aria-hidden />
+              People can register as voluntary blood donors, and their details are securely
+              maintained.
             </li>
-          ))}
-        </ol>
-      </section>
-
-      <section className="home-reveal relative overflow-hidden bg-primary px-4 py-20 text-primary-foreground sm:py-24">
-        <div className="absolute inset-x-0 top-0 h-1 tricolour-rule" />
-        <div className="pointer-events-none absolute -right-10 -top-12 h-48 w-48 rounded-full bg-secondary/20 blur-3xl" />
-        <div className="pointer-events-none absolute -bottom-20 left-1/4 h-52 w-52 rounded-full bg-success/20 blur-3xl" />
-        <div className="relative mx-auto max-w-6xl">
-          <SectionHeading
-            eyebrow="Blood group availability"
-            title="Every blood group matters."
-            description="The network aims to maintain voluntary donors across all major blood groups, so coordinators can seek the right support when it is needed."
-            centered
-            light
-          />
-          <ul className="mx-auto mt-12 grid max-w-5xl grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-8">
-            {bloodGroups.map((group) => (
-              <li
-                key={group}
-                className="group rounded-xl border border-primary-foreground/15 bg-primary-foreground/10 px-3 py-6 text-center backdrop-blur transition-all hover:-translate-y-1 hover:border-accent/70 hover:bg-primary-foreground/15"
-              >
-                <Droplet
-                  className="mx-auto h-5 w-5 text-accent transition-transform group-hover:scale-110"
-                  aria-hidden
-                />
-                <span className="mt-3 block font-display text-2xl font-bold text-primary-foreground">
-                  {group}
-                </span>
-              </li>
-            ))}
+            <li className="flex gap-3">
+              <ShieldCheck className="mt-1 h-4 w-4 shrink-0 text-success" aria-hidden />
+              Authorised coordinators can identify suitable donors and contact them when their blood
+              group is needed.
+            </li>
+            <li className="flex gap-3">
+              <HeartHandshake className="mt-1 h-4 w-4 shrink-0 text-success" aria-hidden />
+              People who urgently need blood can reach the help desk. The goal is to make blood
+              support easier to find across Malappuram when it matters most.
+            </li>
           </ul>
+          <Link
+            to="/donate"
+            className="group mt-8 inline-flex items-center gap-2 rounded-md bg-secondary px-5 py-3 font-display text-sm font-bold text-secondary-foreground transition-all hover:-translate-y-0.5 hover:opacity-90"
+          >
+            Become a Donor{" "}
+            <ArrowRight
+              className="h-4 w-4 transition-transform group-hover:translate-x-1"
+              aria-hidden
+            />
+          </Link>
+        </div>
+        <div className="relative overflow-hidden rounded-2xl shadow-lift">
+          <img
+            src={hero}
+            alt="Volunteers and a nurse at an Indian Youth Congress blood donation camp"
+            width={1920}
+            height={1088}
+            className="aspect-4/3 h-full w-full object-cover transition-transform duration-700 hover:scale-105"
+          />
+          <div className="absolute inset-x-0 bottom-0 bg-primary/85 px-5 py-4 text-sm font-semibold text-primary-foreground">
+            A local network built around voluntary service.
+          </div>
         </div>
       </section>
 
-      <section className="home-reveal mx-auto max-w-6xl px-4 py-20 sm:py-28">
-        <div className="overflow-hidden rounded-3xl border border-secondary/25 bg-secondary/[0.07] shadow-card lg:grid lg:grid-cols-[0.9fr_1.1fr]">
-          <div className="relative bg-secondary p-8 text-secondary-foreground sm:p-12">
-            <div className="absolute inset-x-0 top-0 h-1 bg-accent" />
-            <Clock3 className="h-10 w-10 text-accent" aria-hidden />
-            <p className="mt-8 text-xs font-bold uppercase tracking-[0.24em] text-secondary-foreground/75">
-              Urgent blood help
+      {/* HOW IT WORKS */}
+      <section className="border-y border-border bg-muted/40 px-4 py-20 sm:py-24">
+        <div className="mx-auto max-w-6xl">
+          <p className="text-xs font-bold uppercase tracking-[0.25em] text-secondary">
+            Simple process
+          </p>
+          <h2 className="mt-2 font-display text-3xl font-bold text-primary sm:text-4xl">
+            How it works
+          </h2>
+          <p className="mt-3 max-w-2xl text-muted-foreground">
+            The network helps make the next step clear for donors, coordinators, and people seeking
+            blood.
+          </p>
+          <ol className="mt-10 grid gap-5 md:grid-cols-3">
+            {steps.map((step) => (
+              <li
+                key={step.number}
+                className="card-hover rounded-xl border border-border bg-card p-6 shadow-card"
+              >
+                <span className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-secondary font-display font-bold text-secondary-foreground">
+                  {step.number}
+                </span>
+                <h3 className="mt-5 font-display text-xl font-bold text-primary">{step.title}</h3>
+                <p className="mt-2 text-sm leading-6 text-muted-foreground">{step.body}</p>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+
+      {/* BLOOD GROUPS */}
+      <section className="mx-auto max-w-6xl px-4 py-20 sm:py-24">
+        <div className="max-w-2xl">
+          <p className="text-xs font-bold uppercase tracking-[0.25em] text-secondary">
+            Every donor matters
+          </p>
+
+          <h2 className="mt-2 font-display text-2xl font-bold text-primary sm:text-3xl">
+            Every blood group matters.
+          </h2>
+
+          <p className="mt-3 text-muted-foreground">
+            The network welcomes voluntary donors across all major blood groups.
+          </p>
+        </div>
+
+        <ul className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-8">
+          {bloodGroups.map((group) => (
+            <li
+              key={group}
+              className="rounded-lg border border-border bg-card py-5 text-center font-display text-xl font-bold text-secondary shadow-card transition-all hover:-translate-y-1 hover:shadow-lg"
+            >
+              {group}
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      {/* OUR INSPIRATION */}
+      <section className="border-y border-border bg-muted/45 px-4 py-20 sm:py-28">
+        <div className="mx-auto grid max-w-6xl items-center gap-10 lg:grid-cols-[0.8fr_1.2fr]">
+          <img
+            src={action}
+            alt="Shri Rahul Gandhi"
+            width={720}
+            height={297}
+            className="w-full rounded-2xl object-cover shadow-lift"
+          />
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.25em] text-secondary">
+              Our inspiration
             </p>
-            <h2 className="mt-3 font-display text-4xl font-bold leading-tight">
-              Need blood urgently?
+            <h2 className="mt-3 font-display text-3xl font-bold text-primary sm:text-4xl">
+              Indian Youth Congress
             </h2>
-            <p className="mt-5 max-w-md leading-7 text-secondary-foreground/85">
-              If you or someone you know needs blood, reach our coordinators for assistance. They
-              can be contacted directly by WhatsApp or phone.
+            <p className="mt-5 text-base leading-7 text-muted-foreground">
+              Indian Youth Congress is the youth wing of the Indian National Congress. The
+              organisation emphasizes youth participation, community engagement, and social service.
+            </p>
+            <p className="mt-4 text-base leading-7 text-muted-foreground">
+              Rahul Gandhi is described by IYC as a source of inspiration for the organisation and
+              its youth-oriented vision.
+            </p>
+            <p className="mt-6 border-l-2 border-accent pl-4 text-sm font-semibold leading-6 text-primary">
+              Inspired by a spirit of youth participation and service, our Malappuram initiative
+              focuses on one simple goal: helping people find blood when they need it most.
             </p>
             <Link
-              to="/need-blood"
-              className="group mt-8 inline-flex items-center gap-2 rounded-md bg-primary px-5 py-3 text-sm font-bold text-primary-foreground transition-all hover:-translate-y-0.5 hover:bg-primary/90"
+              to="/donate"
+              className="group mt-7 inline-flex items-center gap-2 text-sm font-bold text-primary transition-colors hover:text-secondary"
             >
-              Find Blood / Get Help
+              Join Our Donor Network{" "}
               <ArrowRight
                 className="h-4 w-4 transition-transform group-hover:translate-x-1"
                 aria-hidden
               />
             </Link>
           </div>
-          <div className="p-6 sm:p-10">
-            <p className="text-sm font-semibold text-primary">Contact the blood help desk</p>
-            <p className="mt-2 text-sm leading-6 text-muted-foreground">
-              Choose a coordinator to call or message on WhatsApp.
-            </p>
-            <div className="mt-6">
-              <WhatsappContacts compact />
-            </div>
+        </div>
+      </section>
+
+      {/* BLOOD HELP DESK */}
+      <section className="border-t border-border">
+        <div className="mx-auto max-w-6xl px-4 py-20 sm:py-24">
+          <p className="text-xs font-bold uppercase tracking-[0.25em] text-secondary">
+            Need urgent help?
+          </p>
+
+          <h2 className="mt-2 font-display text-2xl font-bold text-primary sm:text-3xl">
+            Blood help desk — Call or WhatsApp
+          </h2>
+
+          <p className="mt-3 text-muted-foreground">
+            Patients and relatives can reach our coordinators directly for urgent blood
+            requirements.
+          </p>
+
+          <div className="mt-8">
+            <WhatsappContacts />
           </div>
         </div>
       </section>
 
-      <section className="home-reveal border-y border-border bg-muted/45 px-4 py-20 sm:py-28">
-        <div className="mx-auto grid max-w-6xl items-center gap-10 lg:grid-cols-[1.05fr_0.95fr]">
-          <div>
-            <SectionHeading
-              eyebrow="IYC visual story"
-              title="Youth Power. Community Service. Saving Lives."
-              description="Volunteering can take many forms. Blood donation is one direct way to help someone in a critical moment — a donor steps forward, a coordinator helps connect them, and a community responds with care."
-            />
-            <div className="mt-8 flex items-start gap-4 rounded-xl border border-border bg-card p-5 shadow-card">
-              <img
-                alt="Indian Youth Congress logo"
-                width={56}
-                height={56}
-                className="h-14 w-14 shrink-0 object-contain"
-              />
-              <p className="text-sm leading-6 text-muted-foreground">
-                Powered by the community-service spirit of Indian Youth Congress Malappuram.
-              </p>
-            </div>
-          </div>
-          <div className="relative overflow-hidden rounded-3xl shadow-lift">
-            <img
-              src={action}
-              alt="A donor, volunteer, and medical professional at a blood donation camp"
-              width={1920}
-              height={1088}
-              className="h-72 w-full object-cover sm:h-96"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-primary/95 via-primary/20 to-transparent" />
-            <div className="absolute inset-x-0 bottom-0 p-6 text-primary-foreground sm:p-8">
-              <p className="text-xs font-bold uppercase tracking-[0.22em] text-accent">
-                Blood donation in action
-              </p>
-              <h3 className="mt-3 font-display text-2xl font-bold">
-                A direct way for volunteers to help someone in a critical moment.
-              </h3>
-              <Link
-                to="/donate"
-                className="group mt-5 inline-flex items-center gap-2 text-sm font-bold text-primary-foreground hover:text-accent"
-              >
-                Join the donor network
-                <ArrowRight
-                  className="h-4 w-4 transition-transform group-hover:translate-x-1"
-                  aria-hidden
-                />
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="home-reveal mx-auto max-w-6xl px-4 py-20 sm:py-28">
-        <SectionHeading
-          eyebrow="Powered by the spirit of Indian Youth Congress"
-          title="A blood donation initiative built around community care."
-          description="IYC Malappuram connects its community-service spirit with practical blood-donation support: voluntary registration, coordinator-assisted connections, and confidential donor information."
-          centered
-        />
-        <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {trustPoints.map(({ icon: Icon, title, body }) => (
-            <article
-              key={title}
-              className="card-hover rounded-xl border border-border bg-card p-5 shadow-card"
-            >
-              <Icon className="h-5 w-5 text-success" aria-hidden />
-              <h3 className="mt-4 font-display text-lg font-bold text-primary">{title}</h3>
-              <p className="mt-2 text-sm leading-6 text-muted-foreground">{body}</p>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section className="home-reveal mx-auto max-w-6xl px-4 pb-4 sm:pb-8">
-        <div className="relative overflow-hidden rounded-3xl bg-primary px-6 py-16 text-center text-primary-foreground shadow-lift sm:px-12 sm:py-20">
-          <div className="absolute inset-x-0 top-0 h-1 tricolour-rule" />
-          <Droplet
-            className="pointer-events-none absolute left-[8%] top-10 h-12 w-12 text-accent/25"
-            aria-hidden
-          />
-          <Droplet
-            className="pointer-events-none absolute bottom-9 right-[10%] h-16 w-16 text-primary-foreground/10"
-            aria-hidden
-          />
-          <div className="relative mx-auto max-w-2xl">
-            <p className="text-xs font-bold uppercase tracking-[0.25em] text-accent">
-              Indian Youth Congress · Malappuram
-            </p>
-            <h2 className="mt-4 font-display text-4xl font-bold sm:text-5xl">
-              Be someone&apos;s hope.
-            </h2>
-            <p className="mt-5 text-base leading-7 text-primary-foreground/80">
-              Become a voluntary donor today, or reach the help desk when someone needs blood.
-            </p>
-            <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-              <Link
-                to="/donate"
-                className="group inline-flex items-center justify-center gap-2 rounded-md bg-secondary px-6 py-3.5 font-display font-bold text-secondary-foreground transition-all hover:-translate-y-0.5 hover:opacity-90"
-              >
-                Register as a Donor
-                <ArrowRight
-                  className="h-4 w-4 transition-transform group-hover:translate-x-1"
-                  aria-hidden
-                />
-              </Link>
-              <Link
-                to="/need-blood"
-                className="inline-flex items-center justify-center rounded-md border border-primary-foreground/30 px-6 py-3.5 font-display font-bold text-primary-foreground transition-colors hover:bg-primary-foreground/10"
-              >
-                Need Blood?
-              </Link>
-            </div>
-          </div>
-        </div>
+      {/* FINAL DONOR CTA */}
+      <section className="border-t border-border bg-primary px-4 py-16 text-center text-primary-foreground sm:py-20">
+        <p className="text-xs font-bold uppercase tracking-[0.25em] text-accent">
+          Be someone&apos;s hope
+        </p>
+        <h2 className="mt-3 font-display text-3xl font-bold sm:text-4xl">
+          Ready to become a blood donor?
+        </h2>
+        <p className="mx-auto mt-3 max-w-2xl text-primary-foreground/75">
+          Register your details today. When someone needs your blood group, authorised coordinators
+          can contact you.
+        </p>
+        <Link
+          to="/donate"
+          className="mt-7 inline-flex items-center gap-2 rounded-md bg-secondary px-6 py-3 font-display text-sm font-bold text-secondary-foreground transition-all hover:-translate-y-0.5 hover:opacity-90"
+        >
+          Become a Donor <ArrowRight className="h-4 w-4" aria-hidden />
+        </Link>
       </section>
     </div>
   );
 }
-
-
-
-
-
-
-
-
-
-
