@@ -1,4 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
+import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 export const getAdminStatus = createServerFn({ method: "GET" })
@@ -33,7 +34,7 @@ export const listDonors = createServerFn({ method: "GET" })
 
 export const deleteDonor = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { id: string }) => input)
+  .validator(z.object({ id: z.string().uuid() }))
   .handler(async ({ data, context }) => {
     const { data: isAdmin } = await context.supabase.rpc("has_role", {
       _user_id: context.userId,
