@@ -1,3 +1,9 @@
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import hero2 from "@/assets/hero-2.webp";
+import hero3 from "@/assets/hero-3.webp";
+import banner from "@/assets/banner.webp";
+
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   ArrowRight,
@@ -76,18 +82,94 @@ const reasons: { icon: LucideIcon; title: string; body: string }[] = [
   },
 ];
 
+const fallbackSlides = [
+  {
+    src: hero2,
+    alt: "Indian Youth Congress rally with the national flag",
+    position: "center 20%",
+  },
+  {
+    src: hero3,
+    alt: "Indian Youth Congress leaders addressing a gathering",
+    position: "center 30%",
+  },
+];
+
 function Index() {
+  const [slide, setSlide] = useState(0);
+  const [showSplash, setShowSplash] = useState(true);
+  const [heroSlides, setHeroSlides] = useState(fallbackSlides);
+
+  useEffect(() => {
+    supabase
+      .from("hero_images")
+      .select("image_url")
+      .order("sort_order", { ascending: true })
+      .order("created_at", { ascending: true })
+      .then(({ data }) => {
+        if (data && data.length > 0) {
+          setHeroSlides(
+            data.map((d) => ({
+              src: d.image_url,
+              alt: "Indian Youth Congress",
+              position: "center 30%",
+            })),
+          );
+          setSlide(0);
+        }
+      });
+  }, []);
+
+  useEffect(() => {
+    if (heroSlides.length < 2) return;
+    const id = setInterval(() => {
+      setSlide((s) => (s + 1) % heroSlides.length);
+    }, 5000);
+    return () => clearInterval(id);
+  }, [heroSlides.length]);
+  
+  useEffect(() => {
+    if (!showSplash) return;
+    const t = setTimeout(() => setShowSplash(false), 5000);
+    return () => clearTimeout(t);
+  }, [showSplash]);
+
   return (
     <div className="overflow-hidden">
+            {showSplash && (
+        <div
+          onClick={() => setShowSplash(false)}
+          className="fixed inset-0 z-[100] flex cursor-pointer items-center justify-center bg-white"
+        >
+          <img
+            src={banner}
+            alt="Malappuram Blood Bank — Donate Blood, Save Lives"
+            className="max-h-full w-full object-contain"
+          />
+          <button
+            type="button"
+            onClick={() => setShowSplash(false)}
+            className="absolute bottom-6 right-6 rounded-md bg-primary px-4 py-2 text-sm font-bold text-primary-foreground shadow-lift"
+          >
+            Skip
+          </button>
+        </div>
+      )}
       {/* HERO */}
       <section className="relative isolate min-h-155 overflow-hidden">
-        <img
-          src={hero}
-          alt="Volunteers and a nurse at an Indian Youth Congress blood donation camp"
-          width={1920}
-          height={1088}
-          className="absolute inset-0 h-full w-full object-cover"
-        />
+               {heroSlides.map((s, i) => (
+          <img
+            key={i}
+            src={s.src}
+            alt={s.alt}
+            width={1920}
+            height={1088}
+            style={{ objectPosition: s.position }}
+            className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ease-in-out ${
+              i === slide ? "opacity-100" : "opacity-0"
+            }`}
+          />
+        ))}
 
         <div className="absolute inset-0 hero-overlay" />
 

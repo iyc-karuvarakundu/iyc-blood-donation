@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { deleteDonor, listDonors } from "@/lib/donors.functions";
 import { bloodGroups } from "@/lib/coordinators";
@@ -230,6 +230,151 @@ function AdminPage() {
           </tbody>
         </table>
       </div>
+          <HeroImagesAdmin />
+
+    </div>
+  );
+}
+
+type HeroImage = {
+  id: string;
+  image_url: string;
+  storage_path: string;
+};
+
+function HeroImagesAdmin() {
+  const [images, setImages] = useState<HeroImage[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState("");
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  async function load() {
+    const { data, error } = await supabase
+      .from("hero_images")
+      .select("id, image_url, storage_path")
+      .order("sort_order", { ascending: true })
+      .order("created_at", { ascending: true });
+    if (error) setError(error.message);
+    else setImages(data ?? []);
+    setLoading(false);
+  }
+
+  useEffect(() => {
+    void load();
+  }, []);
+
+  async function onAdd(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setError("");
+    if (!file.type.startsWith("image/")) {
+      setError("Please choose an image file.");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      setError("Image must be under 5 MB.");
+      return;
+    }
+    setUploading(true);
+    const ext = file.name.split(".").pop() || "jpg";
+    const path = `${crypto.randomUUID()}.${ext}`;
+
+    const { error: upErr } = await supabase.storage.from("hero-images").upload(path, file);
+    if (upErr) {
+      setError(upErr.message);
+      setUploading(false);
+      return;
+    }
+    const { data: pub } = supabase.storage.from("hero-images").getPublicUrl(path);
+    const { error: insErr } = await supabase.from("hero_images").insert({
+      image_url: pub.publicUrl,
+      storage_path: path,
+      sort_order: images.length,
+    });
+    if (insErr) {
+      await supabase.storage.from("hero-images").remove([path]);
+      setError(insErr.message);
+    } else {
+      await load();
+    }
+    setUploading(false);
+    if (fileRef.current) fileRef.current.value = "";
+  }
+
+  async function onRemove(img: HeroImage) {
+    if (!window.confirm("Remove this hero image?")) return;
+    setError("");
+    const { error: delErr } = await supabase.from("hero_images").delete().eq("id", img.id);
+    if (delErr) {
+      setError(delErr.message);
+      return;
+    }
+    await supabase.storage.from("hero-images").remove([img.storage_path]);
+    await load();
+  }
+
+  return (
+    <div className="mt-12">
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <p className="text-xs font-bold uppercase tracking-[0.25em] text-secondary">
+            Home page
+          </p>
+          <h2 className="mt-1 font-display text-2xl font-bold text-primary">Hero images</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            These images slide on the home page. If none are added, the default images are shown.
+          </p>
+        </div>
+        <div>
+          <input
+            ref={fileRef}
+            type="file"
+            accept="image/*"
+            onChange={onAdd}
+            className="hidden"
+            id="hero-upload"
+          />
+          <button
+            type="button"
+            disabled={uploading}
+            onClick={() => fileRef.current?.click()}
+            className="rounded-md bg-primary px-4 py-2 text-sm font-bold text-primary-foreground disabled:opacity-60"
+          >
+            {uploading ? "Uploading…" : "Add image"}
+          </button>
+        </div>
+      </div>
+
+      {error && <p className="mt-3 text-sm text-destructive">{error}</p>}
+
+      {loading ? (
+        <p className="mt-4 text-sm text-muted-foreground">Loading…</p>
+      ) : images.length === 0 ? (
+        <p className="mt-4 text-sm text-muted-foreground">
+          No custom hero images yet. Default images are showing.
+        </p>
+      ) : (
+        <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {images.map((img) => (
+            <div
+              key={img.id}
+              className="overflow-hidden rounded-xl border border-border bg-card shadow-card"
+            >
+              <img src={img.image_url} alt="Hero" className="aspect-video w-full object-cover" />
+              <div className="p-3 text-right">
+                <button
+                  type="button"
+                  onClick={() => onRemove(img)}
+                  className="rounded-md border border-border px-3 py-1.5 text-xs font-semibold text-destructive"
+                >
+                  Remove
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

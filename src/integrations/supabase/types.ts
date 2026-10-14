@@ -14,6 +14,30 @@ export type Database = {
   }
   public: {
     Tables: {
+            hero_images: {
+        Row: {
+          id: string
+          image_url: string
+          storage_path: string
+          sort_order: number
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          image_url: string
+          storage_path: string
+          sort_order?: number
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          image_url?: string
+          storage_path?: string
+          sort_order?: number
+          created_at?: string
+        }
+        Relationships: []
+      }
       donors: {
         Row: {
           blood_group: string
