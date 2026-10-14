@@ -127,7 +127,7 @@ function Index() {
     }, 5000);
     return () => clearInterval(id);
   }, [heroSlides.length]);
-  
+
   useEffect(() => {
     if (!showSplash) return;
     const t = setTimeout(() => setShowSplash(false), 5000);
@@ -301,14 +301,14 @@ function Index() {
           </Link>
         </div>
         <div className="relative overflow-hidden rounded-2xl shadow-lift">
-          <img
-            src={hero}
-            alt="Volunteers and a nurse at an Indian Youth Congress blood donation camp"
-            width={1920}
-            height={1088}
-            className="aspect-4/3 h-full w-full object-cover transition-transform duration-700 hover:scale-105"
-          />
-          <div className="absolute inset-x-0 bottom-0 bg-primary/85 px-5 py-4 text-sm font-semibold text-primary-foreground">
+         <img
+              src={hero}
+              alt="Volunteers and a nurse at an Indian Youth Congress blood donation camp"
+              width={1920}
+              height={1088}
+              className="aspect-video h-full w-full object-cover transition-transform duration-700 hover:scale-105"
+            />
+              <div className="absolute inset-x-0 bottom-0 bg-primary/85 px-5 py-4 text-sm font-semibold text-primary-foreground">
             A local network built around voluntary service.
           </div>
         </div>
