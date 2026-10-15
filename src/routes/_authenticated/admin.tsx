@@ -60,6 +60,23 @@ function AdminPage() {
     await supabase.auth.signOut();
     void navigate({ to: "/auth", replace: true });
   }
+  async function markDonated(id: string, name: string, count: number) {
+  if (!window.confirm(`Mark ${name} as donated today?`)) return;
+  const { data: updated, error } = await supabase
+    .from("donors")
+    .update({ last_donated_at: new Date().toISOString(), donation_count: count + 1 })
+    .eq("id", id)
+    .select("id");
+  if (error) {
+    window.alert(error.message);
+    return;
+  }
+  if (!updated || updated.length === 0) {
+    window.alert("Update blocked. Admin policy or columns missing in Supabase.");
+    return;
+  }
+  await queryClient.invalidateQueries({ queryKey: ["donors"] });
+}
 
   useEffect(() => {
     if (!data || data.isAdmin !== false) return;
@@ -179,6 +196,7 @@ function AdminPage() {
               <th className="px-4 py-3">Place</th>
               <th className="px-4 py-3">District</th>
               <th className="px-4 py-3">Registered</th>
+              <th className="px-4 py-3">Last donated</th>
               <th className="px-4 py-3" />
             </tr>
           </thead>
@@ -197,32 +215,51 @@ function AdminPage() {
                 <td className="px-4 py-3 text-muted-foreground">
                   {new Date(d.created_at).toLocaleDateString()}
                 </td>
-                <td className="px-4 py-3 text-right">
-                  <a
-                    href={`https://wa.me/${d.phone.replace(/[^0-9]/g, "").replace(/^0+/, "")}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="rounded-md bg-whatsapp px-3 py-1.5 text-xs font-bold text-whatsapp-foreground"
-                  >
-                    WhatsApp
-                  </a>
-                  <button
-                    type="button"
-                    onClick={async () => {
-                      if (!window.confirm(`Remove ${d.full_name} from the registry?`)) return;
-                      await removeDonor({ data: { id: d.id } });
-                      await queryClient.invalidateQueries({ queryKey: ["donors"] });
-                    }}
-                    className="ml-2 rounded-md border border-border px-3 py-1.5 text-xs font-semibold text-destructive"
-                  >
-                    Remove
-                  </button>
+                   <td className="px-4 py-3 text-muted-foreground">
+                      {d.last_donated_at ? (
+                        <>
+                          {new Date(d.last_donated_at).toLocaleDateString()}
+                          <span className="ml-1 text-xs">({d.donation_count ?? 1}x)</span>
+                        </>
+                      ) : (
+                        "Not yet"
+                      )}
+                    </td>
+                <td className="px-4 py-3">
+                  <div className="flex items-center justify-end gap-2 whitespace-nowrap">
+                    <a
+                      href={`https://wa.me/${d.phone.replace(/[^0-9]/g, "").replace(/^0+/, "")}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="rounded-md bg-whatsapp px-3 py-1.5 text-xs font-bold text-whatsapp-foreground"
+                    >
+                      WhatsApp
+                    </a>
+                    <button
+                      type="button"
+                      onClick={() => markDonated(d.id, d.full_name, d.donation_count ?? 0)}
+                      className="rounded-md bg-primary px-3 py-1.5 text-xs font-bold text-primary-foreground"
+                    >
+                      Mark donated
+                    </button>
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        if (!window.confirm(`Remove ${d.full_name} from the registry?`)) return;
+                        await removeDonor({ data: { id: d.id } });
+                        await queryClient.invalidateQueries({ queryKey: ["donors"] });
+                      }}
+                      className="rounded-md border border-border px-3 py-1.5 text-xs font-semibold text-destructive"
+                    >
+                      Remove
+                    </button>
+                  </div>
                 </td>
-              </tr>
+                </tr>
             ))}
             {filtered.length === 0 && (
               <tr>
-                <td colSpan={7} className="px-4 py-10 text-center text-muted-foreground">
+                <td colSpan={8} className="px-4 py-10 text-center text-muted-foreground">
                   No donors match this filter yet.
                 </td>
               </tr>

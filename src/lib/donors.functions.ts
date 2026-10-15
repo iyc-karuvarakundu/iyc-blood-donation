@@ -25,7 +25,7 @@ export const listDonors = createServerFn({ method: "GET" })
 
     const { data, error } = await context.supabase
       .from("donors")
-      .select("id, full_name, phone, email, blood_group, district, place, date_of_birth, notes, created_at")
+      .select("id, full_name, phone, email, blood_group, district, place, date_of_birth, notes, created_at, last_donated_at, donation_count")
       .order("created_at", { ascending: false });
 
     if (error) throw new Error(error.message);
