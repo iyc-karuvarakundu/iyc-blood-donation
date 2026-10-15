@@ -209,30 +209,30 @@ function Index() {
       </section>
 
       {/* IYC MALAPPURAM */}
-      <section className="border-b border-border bg-primary px-4 py-12 text-primary-foreground sm:py-16">
-        <div className="mx-auto grid max-w-6xl items-center gap-8 md:grid-cols-[auto_1fr]">
-          <img
-            src={iycLogo}
-            alt="Indian Youth Congress logo"
-            width={92}
-            height={92}
-            className="h-20 w-20 rounded-full bg-primary-foreground/10 p-2 ring-1 ring-primary-foreground/20"
-          />
-          <div>
-            <p className="text-xs font-bold uppercase tracking-[0.25em] text-accent">
-              IYC Malappuram
-            </p>
-            <h2 className="mt-2 font-display text-2xl font-bold sm:text-3xl">
-              Youth participation, community service, and blood donation.
-            </h2>
-            <p className="mt-3 max-w-3xl leading-7 text-primary-foreground/75">
-              This initiative carries the community spirit of Indian Youth Congress into a practical
-              local service: helping voluntary donors and people seeking blood find a clearer path
-              to one another.
-            </p>
-          </div>
-        </div>
-      </section>
+<section className="border-b border-border bg-white px-4 py-12 text-foreground sm:py-16">
+  <div className="mx-auto grid max-w-6xl items-center gap-8 md:grid-cols-[auto_1fr]">
+    <img
+      src={iycLogo}
+      alt="Indian Youth Congress logo"
+      width={92}
+      height={92}
+      className="h-20 w-20 rounded-full bg-primary/10 p-2 ring-1 ring-primary/20"
+    />
+    <div>
+      <p className="text-xs font-bold uppercase tracking-[0.25em] text-accent">
+        IYC Malappuram
+      </p>
+      <h2 className="mt-2 font-display text-2xl font-bold text-primary sm:text-3xl">
+        Youth participation, community service, and blood donation.
+      </h2>
+      <p className="mt-3 max-w-3xl leading-7 text-muted-foreground">
+        This initiative carries the community spirit of Indian Youth Congress into a practical
+        local service: helping voluntary donors and people seeking blood find a clearer path
+        to one another.
+      </p>
+    </div>
+  </div>
+</section>
 
       {/* WHY BLOOD DONATION MATTERS */}
       <section className="border-b border-border bg-muted/45 px-4 py-20 sm:py-24">
