@@ -268,6 +268,7 @@ function AdminPage() {
         </table>
       </div>
           <HeroImagesAdmin />
+          <EventPhotosAdmin />
 
     </div>
   );
@@ -277,6 +278,7 @@ type HeroImage = {
   id: string;
   image_url: string;
   storage_path: string;
+  is_hero: boolean;
 };
 
 function HeroImagesAdmin() {
@@ -289,7 +291,8 @@ function HeroImagesAdmin() {
   async function load() {
     const { data, error } = await supabase
       .from("hero_images")
-      .select("id, image_url, storage_path")
+      .select("id, image_url, storage_path, is_hero")
+      .eq("is_hero", true)
       .order("sort_order", { ascending: true })
       .order("created_at", { ascending: true });
     if (error) setError(error.message);
@@ -328,6 +331,7 @@ function HeroImagesAdmin() {
       image_url: pub.publicUrl,
       storage_path: path,
       sort_order: images.length,
+      is_hero: true,
     });
     if (insErr) {
       await supabase.storage.from("hero-images").remove([path]);
@@ -355,23 +359,14 @@ function HeroImagesAdmin() {
     <div className="mt-12">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="text-xs font-bold uppercase tracking-[0.25em] text-secondary">
-            Home page
-          </p>
+          <p className="text-xs font-bold uppercase tracking-[0.25em] text-secondary">Home page</p>
           <h2 className="mt-1 font-display text-2xl font-bold text-primary">Hero images</h2>
           <p className="mt-1 text-sm text-muted-foreground">
             These images slide on the home page. If none are added, the default images are shown.
           </p>
         </div>
         <div>
-          <input
-            ref={fileRef}
-            type="file"
-            accept="image/*"
-            onChange={onAdd}
-            className="hidden"
-            id="hero-upload"
-          />
+          <input ref={fileRef} type="file" accept="image/*" onChange={onAdd} className="hidden" />
           <button
             type="button"
             disabled={uploading}
@@ -406,6 +401,157 @@ function HeroImagesAdmin() {
                   className="rounded-md border border-border px-3 py-1.5 text-xs font-semibold text-destructive"
                 >
                   Remove
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+
+type EventPhoto = {
+  id: string;
+  image_url: string;
+  storage_path: string;
+  caption: string | null;
+};
+
+function EventPhotosAdmin() {
+  const [photos, setPhotos] = useState<EventPhoto[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState("");
+  const [caption, setCaption] = useState("");
+  const fileRef = useRef<HTMLInputElement>(null);
+  const table = () => (supabase as any).from("event_photos");
+
+  async function load() {
+    const { data, error } = await table()
+      .select("id, image_url, storage_path, caption")
+      .order("created_at", { ascending: false });
+    if (error) setError(error.message);
+    else setPhotos(data ?? []);
+    setLoading(false);
+  }
+
+  useEffect(() => {
+    void load();
+  }, []);
+
+  async function onAdd(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = Array.from(e.target.files ?? []);
+    if (files.length === 0) return;
+    setError("");
+    setUploading(true);
+
+    for (const file of files) {
+      if (!file.type.startsWith("image/")) {
+        setError(`${file.name}: not an image.`);
+        continue;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        setError(`${file.name}: must be under 5 MB.`);
+        continue;
+      }
+      const ext = file.name.split(".").pop() || "jpg";
+      const path = `${crypto.randomUUID()}.${ext}`;
+      const { error: upErr } = await supabase.storage.from("event-photos").upload(path, file);
+      if (upErr) {
+        setError(upErr.message);
+        continue;
+      }
+      const { data: pub } = supabase.storage.from("event-photos").getPublicUrl(path);
+      const { error: insErr } = await table().insert({
+        image_url: pub.publicUrl,
+        storage_path: path,
+        caption: caption.trim() || null,
+      });
+      if (insErr) {
+        await supabase.storage.from("event-photos").remove([path]);
+        setError(insErr.message);
+      }
+    }
+
+    setCaption("");
+    await load();
+    setUploading(false);
+    if (fileRef.current) fileRef.current.value = "";
+  }
+
+  async function remove(p: EventPhoto) {
+    if (!window.confirm("Permanently delete this photo?")) return;
+    setError("");
+    const { error: delErr } = await table().delete().eq("id", p.id);
+    if (delErr) {
+      setError(delErr.message);
+      return;
+    }
+    await supabase.storage.from("event-photos").remove([p.storage_path]);
+    await load();
+  }
+
+  return (
+    <div className="mt-12">
+      <p className="text-xs font-bold uppercase tracking-[0.25em] text-secondary">Gallery page</p>
+      <h2 className="mt-1 font-display text-2xl font-bold text-primary">Event photos</h2>
+      <p className="mt-1 text-sm text-muted-foreground">
+        These photos appear on the public Gallery page.
+      </p>
+
+      <div className="mt-4 flex flex-wrap items-center gap-3">
+        <input
+          value={caption}
+          onChange={(e) => setCaption(e.target.value)}
+          placeholder="Caption (optional)"
+          className="min-w-56 flex-1 rounded-md border border-input bg-card px-3 py-2 text-sm"
+        />
+        <input
+          ref={fileRef}
+          type="file"
+          accept="image/*"
+          multiple
+          onChange={onAdd}
+          className="hidden"
+        />
+        <button
+          type="button"
+          disabled={uploading}
+          onClick={() => fileRef.current?.click()}
+          className="rounded-md bg-primary px-4 py-2 text-sm font-bold text-primary-foreground disabled:opacity-60"
+        >
+          {uploading ? "Uploading…" : "Add photos"}
+        </button>
+      </div>
+
+      {error && <p className="mt-3 text-sm text-destructive">{error}</p>}
+
+      {loading ? (
+        <p className="mt-4 text-sm text-muted-foreground">Loading…</p>
+      ) : photos.length === 0 ? (
+        <p className="mt-4 text-sm text-muted-foreground">No event photos yet.</p>
+      ) : (
+        <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {photos.map((p) => (
+            <div
+              key={p.id}
+              className="overflow-hidden rounded-xl border border-border bg-card shadow-card"
+            >
+              <img
+                src={p.image_url}
+                alt={p.caption ?? "Event"}
+                className="aspect-video w-full object-cover"
+              />
+              <div className="flex items-center justify-between gap-2 p-3">
+                <span className="truncate text-xs text-muted-foreground">{p.caption ?? ""}</span>
+                <button
+                  type="button"
+                  onClick={() => remove(p)}
+                  className="shrink-0 rounded-md border border-border px-3 py-1.5 text-xs font-semibold text-destructive"
+                >
+                  Delete
                 </button>
               </div>
             </div>

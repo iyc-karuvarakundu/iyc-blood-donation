@@ -3,6 +3,7 @@ import { useState } from "react";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { bloodGroups, malappuramPlaces } from "@/lib/coordinators";
+import banner from "@/assets/banner.webp";
 
 export const Route = createFileRoute("/donate")({
   head: () => ({
@@ -35,15 +36,34 @@ const donorSchema = z.object({
   blood_group: z.enum(bloodGroups, { message: "Select your blood group" }),
   district: z.string().trim().min(2).max(60),
   place: z.string().trim().min(2, "Select or enter your place").max(100),
+  mandalam: z.string().trim().min(2, "Select or enter your mandalam").max(100),
   date_of_birth: z.string().trim().max(20),
   notes: z.string().trim().max(500),
 });
+
+const mandalamsByDistrict: Record<string, string[]> = {
+  Malappuram: ["Kondotty", "Eranad", "Nilambur", "Wandoor", "Manjeri", "Perinthalmanna", "Mankada", "Malappuram", "Vengara", "Vallikkunnu", "Tirurangadi", "Tanur", "Tirur", "Kottakkal", "Thavanur", "Ponnani"],
+  Kozhikode: ["Vatakara", "Kuttiady", "Nadapuram", "Quilandy", "Perambra", "Balussery", "Elathur", "Kozhikode North", "Kozhikode South", "Beypore", "Kunnamangalam", "Koduvally", "Thiruvambady"],
+  Palakkad: ["Thrithala", "Pattambi", "Shornur", "Ottapalam", "Kongad", "Mannarkkad", "Malampuzha", "Palakkad", "Tarur", "Chittur", "Nenmara", "Alathur"],
+  Thrissur: ["Chelakkara", "Kunnamkulam", "Guruvayur", "Manalur", "Wadakkanchery", "Ollur", "Thrissur", "Nattika", "Kaipamangalam", "Irinjalakuda", "Puthukkad", "Chalakudy", "Kodungallur"],
+  Wayanad: ["Mananthavady", "Sulthan Bathery", "Kalpetta"],
+  Kannur: ["Payyannur", "Kalliasseri", "Taliparamba", "Irikkur", "Azhikode", "Kannur", "Dharmadom", "Thalassery", "Kuthuparamba", "Mattannur", "Peravoor"],
+  Kasaragod: ["Manjeshwaram", "Kasaragod", "Udma", "Kanhangad", "Thrikaripur"],
+  Ernakulam: ["Perumbavoor", "Angamaly", "Aluva", "Kalamassery", "Paravur", "Vypin", "Kochi", "Thrippunithura", "Ernakulam", "Thrikkakara", "Kunnathunad", "Piravom", "Muvattupuzha", "Kothamangalam"],
+  Idukki: ["Devikulam", "Udumbanchola", "Thodupuzha", "Idukki", "Peerumade"],
+  Kottayam: ["Pala", "Kaduthuruthy", "Vaikom", "Ettumanoor", "Kottayam", "Puthuppally", "Changanassery", "Kanjirappally", "Poonjar"],
+  Alappuzha: ["Aroor", "Cherthala", "Alappuzha", "Ambalappuzha", "Kuttanad", "Haripad", "Kayamkulam", "Mavelikkara", "Chengannur"],
+  Pathanamthitta: ["Thiruvalla", "Ranni", "Aranmula", "Konni", "Adoor"],
+  Kollam: ["Karunagappally", "Chavara", "Kunnathur", "Kottarakkara", "Pathanapuram", "Punalur", "Chadayamangalam", "Kundara", "Kollam", "Eravipuram", "Chathannur"],
+  Thiruvananthapuram: ["Varkala", "Attingal", "Chirayinkeezhu", "Nedumangad", "Vamanapuram", "Kazhakkoottam", "Vattiyoorkavu", "Thiruvananthapuram", "Nemom", "Aruvikkara", "Parassala", "Kattakkada", "Kovalam", "Neyyattinkara"],
+};
 
 const fieldClass =
   "mt-1.5 w-full rounded-md border border-input bg-card px-3 py-2.5 text-sm text-foreground outline-none focus:border-ring focus:ring-2 focus:ring-ring/30";
 const labelClass = "text-sm font-semibold text-primary";
 
 function DonatePage() {
+  const [district, setDistrict] = useState("Malappuram");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [status, setStatus] = useState<"idle" | "saving" | "done" | "error">("idle");
   const [message, setMessage] = useState("");
@@ -74,6 +94,7 @@ function DonatePage() {
       blood_group: values.blood_group,
       district: values.district,
       place: values.place,
+      mandalam: values.mandalam,
       date_of_birth: values.date_of_birth || null,
       notes: values.notes || null,
     });
@@ -85,6 +106,7 @@ function DonatePage() {
     }
 
     form.reset();
+    setDistrict("Malappuram");
     setStatus("done");
     setMessage(
       "Thank you! You are now part of the Indian Youth Congress Malappuram donor network.",
@@ -93,6 +115,7 @@ function DonatePage() {
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-14">
+      
       <p className="text-xs font-bold uppercase tracking-[0.25em] text-secondary">
         Blood Donation Campaign
       </p>
@@ -103,6 +126,7 @@ function DonatePage() {
         Join our mission to save lives by donating blood. Every drop you give brings hope.
         Your details stay confidential and are visible only to our authorised coordinators.
       </p>
+      
 
       {status === "done" ? (
         <div className="mt-8 rounded-xl border border-success/40 bg-success/10 p-6">
@@ -179,8 +203,14 @@ function DonatePage() {
             <label className={labelClass} htmlFor="district">
               District
             </label>
-            <select id="district" name="district" defaultValue="Malappuram" className={fieldClass}>
-              {[
+            <select
+                id="district"
+                name="district"
+                value={district}
+                onChange={(e) => setDistrict(e.target.value)}
+                className={fieldClass}
+              >
+                {[
                 "Malappuram",
                 "Kozhikode",
                 "Palakkad",
@@ -209,22 +239,44 @@ function DonatePage() {
               Place
             </label>
             <input
-              id="place"
-              name="place"
-              list="places"
-              placeholder="Select or type your place"
-              className={fieldClass}
-              maxLength={100}
-            />
-            <datalist id="places">
-              {malappuramPlaces.map((p) => (
-                <option key={p} value={p} />
-              ))}
-            </datalist>
+                key={district}
+                id="place"
+                name="place"
+                list="places"
+                placeholder="Select or type your place"
+                className={fieldClass}
+                maxLength={100}
+              />
+              <datalist id="places">
+                {(district === "Malappuram" ? malappuramPlaces : []).map((p) => (
+                  <option key={p} value={p} />
+                ))}
+              </datalist>
             <FieldError message={errors["place"]} />
           </div>
 
-          <div>
+                    <div>
+            <label className={labelClass} htmlFor="mandalam">
+              Mandalam
+            </label>
+            <input
+              key={district}
+              id="mandalam"
+              name="mandalam"
+              list="mandalams"
+              placeholder="Select or type your mandalam"
+              className={fieldClass}
+              maxLength={100}
+            />
+            <datalist id="mandalams">
+              {(mandalamsByDistrict[district] ?? []).map((m) => (
+                <option key={m} value={m} />
+              ))}
+            </datalist>
+            <FieldError message={errors["mandalam"]} />
+          </div>
+
+          <div className="sm:col-span-2">
             <label className={labelClass} htmlFor="date_of_birth">
               Date of birth
             </label>

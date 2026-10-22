@@ -14,6 +14,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as DonateRouteImport } from './routes/donate'
+import { Route as GalleryRouteImport } from './routes/gallery'
 import { Route as NeedBloodRouteImport } from './routes/need-blood'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 
@@ -41,6 +42,11 @@ const DonateRoute = DonateRouteImport.update({
   path: '/donate',
   getParentRoute: () => rootRouteImport,
 } as any)
+const GalleryRoute = GalleryRouteImport.update({
+  id: '/gallery',
+  path: '/gallery',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const NeedBloodRoute = NeedBloodRouteImport.update({
   id: '/need-blood',
   path: '/need-blood',
@@ -57,6 +63,7 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/auth': typeof AuthRoute
   '/donate': typeof DonateRoute
+  '/gallery': typeof GalleryRoute
   '/need-blood': typeof NeedBloodRoute
   '/admin': typeof AuthenticatedAdminRoute
 }
@@ -65,6 +72,7 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/auth': typeof AuthRoute
   '/donate': typeof DonateRoute
+  '/gallery': typeof GalleryRoute
   '/need-blood': typeof NeedBloodRoute
   '/admin': typeof AuthenticatedAdminRoute
 }
@@ -75,14 +83,17 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/auth': typeof AuthRoute
   '/donate': typeof DonateRoute
+  '/gallery': typeof GalleryRoute
   '/need-blood': typeof NeedBloodRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about' | '/auth' | '/donate' | '/need-blood' | '/admin'
+  fullPaths:
+    '/' | '/about' | '/auth' | '/donate' | '/gallery' | '/need-blood' | '/admin'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/auth' | '/donate' | '/need-blood' | '/admin'
+  to:
+    '/' | '/about' | '/auth' | '/donate' | '/gallery' | '/need-blood' | '/admin'
   id:
     | '__root__'
     | '/'
@@ -90,6 +101,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/auth'
     | '/donate'
+    | '/gallery'
     | '/need-blood'
     | '/_authenticated/admin'
   fileRoutesById: FileRoutesById
@@ -100,6 +112,7 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   AuthRoute: typeof AuthRoute
   DonateRoute: typeof DonateRoute
+  GalleryRoute: typeof GalleryRoute
   NeedBloodRoute: typeof NeedBloodRoute
 }
 
@@ -140,6 +153,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DonateRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/gallery': {
+      id: '/gallery'
+      path: '/gallery'
+      fullPath: '/gallery'
+      preLoaderRoute: typeof GalleryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/need-blood': {
       id: '/need-blood'
       path: '/need-blood'
@@ -174,6 +194,7 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   AuthRoute: AuthRoute,
   DonateRoute: DonateRoute,
+  GalleryRoute: GalleryRoute,
   NeedBloodRoute: NeedBloodRoute,
 }
 export const routeTree = rootRouteImport

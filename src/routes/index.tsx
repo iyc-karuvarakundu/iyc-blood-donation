@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import hero2 from "@/assets/hero-2.webp";
 import hero3 from "@/assets/hero-3.webp";
-import banner from "@/assets/banner.webp";
 
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
@@ -97,13 +96,13 @@ const fallbackSlides = [
 
 function Index() {
   const [slide, setSlide] = useState(0);
-  const [showSplash, setShowSplash] = useState(true);
   const [heroSlides, setHeroSlides] = useState(fallbackSlides);
 
-  useEffect(() => {
+   useEffect(() => {
     supabase
       .from("hero_images")
       .select("image_url")
+      .eq("is_hero", true)
       .order("sort_order", { ascending: true })
       .order("created_at", { ascending: true })
       .then(({ data }) => {
@@ -128,84 +127,25 @@ function Index() {
     return () => clearInterval(id);
   }, [heroSlides.length]);
 
-  useEffect(() => {
-    if (!showSplash) return;
-    const t = setTimeout(() => setShowSplash(false), 5000);
-    return () => clearTimeout(t);
-  }, [showSplash]);
+  
 
   return (
     <div className="overflow-hidden">
-            {showSplash && (
-        <div
-          onClick={() => setShowSplash(false)}
-          className="fixed inset-0 z-[100] flex cursor-pointer items-center justify-center bg-white"
-        >
-          <img
-            src={banner}
-            alt="Malappuram Blood Bank — Donate Blood, Save Lives"
-            className="max-h-full w-full object-contain"
-          />
-          <button
-            type="button"
-            onClick={() => setShowSplash(false)}
-            className="absolute bottom-6 right-6 rounded-md bg-primary px-4 py-2 text-sm font-bold text-primary-foreground shadow-lift"
-          >
-            Skip
-          </button>
-        </div>
-      )}
-      {/* HERO */}
-      <section className="relative isolate min-h-155 overflow-hidden">
-               {heroSlides.map((s, i) => (
+            
+            {/* HERO */}
+      <section className="relative isolate aspect-[8/3] w-full overflow-hidden bg-muted">
+        {heroSlides.map((s, i) => (
           <img
             key={i}
             src={s.src}
             alt={s.alt}
             width={1920}
-            height={1088}
-            style={{ objectPosition: s.position }}
+            height={720}
             className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ease-in-out ${
               i === slide ? "opacity-100" : "opacity-0"
             }`}
           />
         ))}
-
-        <div className="absolute inset-0 hero-overlay" />
-
-        <div className="relative mx-auto flex min-h-155 max-w-6xl items-center px-4 py-24 sm:py-32 lg:py-40">
-          <div className="max-w-3xl">
-            <p className="text-xs font-bold uppercase tracking-[0.3em] text-accent sm:text-sm">
-              Indian Youth Congress · Malappuram
-            </p>
-
-            <h1 className="mt-4 max-w-3xl font-display text-4xl font-bold leading-tight text-primary-foreground sm:text-5xl lg:text-6xl">
-              One donation can give someone one more tomorrow.
-            </h1>
-
-            <p className="mt-6 max-w-2xl text-base leading-7 text-primary-foreground/90 sm:text-lg sm:leading-8">
-              A few minutes of your time can make a life-changing difference. Register as a
-              voluntary blood donor and help us connect people in need with possible donor support
-              across Malappuram.
-            </p>
-
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Link
-                to="/donate"
-                className="rounded-md bg-secondary px-6 py-3 font-display text-base font-bold text-secondary-foreground transition-all hover:-translate-y-0.5 hover:opacity-90"
-              >
-                Become a Donor
-              </Link>
-
-              <Link
-                to="/need-blood"
-                className="rounded-md border border-primary-foreground/40 bg-primary/40 px-6 py-3 font-display text-base font-bold text-primary-foreground backdrop-blur transition-all hover:-translate-y-0.5 hover:bg-primary/60"
-              >
-                I Need Blood Now
-              </Link>
-            </div>
-          </div>
-        </div>
       </section>
 
       {/* IYC MALAPPURAM */}
