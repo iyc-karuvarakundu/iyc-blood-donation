@@ -127,6 +127,14 @@ function DonatePage() {
         Your details stay confidential and are visible only to our authorised coordinators.
       </p>
       
+      <div className="mt-8 mb-6 w-full overflow-hidden rounded-xl">
+        <img
+          src={banner}
+          alt="RDS Raktha Dhona Sena Malappuram"
+          className="block h-auto w-full object-contain"
+        />
+      </div>
+
 
       {status === "done" ? (
         <div className="mt-8 rounded-xl border border-success/40 bg-success/10 p-6">

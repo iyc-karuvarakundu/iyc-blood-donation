@@ -1,4 +1,4 @@
-import { coordinators, whatsappHelpLink } from "@/lib/coordinators";
+import { toCoordinator, useCoordinators, whatsappHelpLink } from "@/lib/coordinators";
 
 export function WhatsappContacts({
   group,
@@ -7,6 +7,16 @@ export function WhatsappContacts({
   group?: string | undefined;
   compact?: boolean;
 }) {
+  const { data, isPending } = useCoordinators();
+  const coordinators = (data ?? []).map(toCoordinator);
+
+  if (isPending) {
+    return <p className="text-sm text-muted-foreground">Loading coordinators…</p>;
+  }
+  if (coordinators.length === 0) {
+    return <p className="text-sm text-muted-foreground">No coordinators available right now.</p>;
+  }
+
   return (
     <div
       className={compact ? "grid gap-4 sm:grid-cols-2" : "grid gap-4 sm:grid-cols-2 lg:grid-cols-3"}

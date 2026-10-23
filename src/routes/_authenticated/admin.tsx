@@ -269,6 +269,7 @@ function AdminPage() {
       </div>
           <HeroImagesAdmin />
           <EventPhotosAdmin />
+          <CoordinatorsAdmin />
 
     </div>
   );
@@ -556,6 +557,198 @@ function EventPhotosAdmin() {
               </div>
             </div>
           ))}
+        </div>
+      )}
+    </div>
+  );
+}
+function CoordinatorsAdmin() {
+  const queryClient = useQueryClient();
+  const [rows, setRows] = useState<
+    { id: string; name: string; area: string; phone: string; sort_order: number }[]
+  >([]);
+  const [loading, setLoading] = useState(true);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+  const [form, setForm] = useState({ name: "", area: "", phone: "" });
+  const [editId, setEditId] = useState<string | null>(null);
+  const table = () => (supabase as any).from("coordinators");
+
+  async function load() {
+    const { data, error } = await table()
+      .select("id, name, area, phone, sort_order")
+      .order("sort_order", { ascending: true })
+      .order("created_at", { ascending: true });
+    if (error) setError(error.message);
+    else setRows(data ?? []);
+    setLoading(false);
+  }
+
+  useEffect(() => {
+    void load();
+  }, []);
+
+  async function refresh() {
+    await load();
+    await queryClient.invalidateQueries({ queryKey: ["coordinators"] });
+  }
+
+  function resetForm() {
+    setForm({ name: "", area: "", phone: "" });
+    setEditId(null);
+  }
+
+  async function onSave(e: React.FormEvent) {
+    e.preventDefault();
+    setError("");
+    const name = form.name.trim();
+    const phone = form.phone.trim();
+    if (!name) return setError("Name is required.");
+    if (phone.replace(/\D/g, "").length < 10) return setError("Enter a valid phone number.");
+    setBusy(true);
+    const payload = { name, area: form.area.trim(), phone };
+    const { error: err } = editId
+      ? await table().update(payload).eq("id", editId)
+      : await table().insert({
+          ...payload,
+          sort_order: rows.length ? Math.max(...rows.map((r) => r.sort_order)) + 1 : 0,
+        });
+    setBusy(false);
+    if (err) return setError(err.message);
+    resetForm();
+    await refresh();
+  }
+
+  async function onRemove(r: { id: string; name: string }) {
+    if (!window.confirm(`Remove ${r.name} from coordinators?`)) return;
+    setError("");
+    const { error: err } = await table().delete().eq("id", r.id);
+    if (err) return setError(err.message);
+    await refresh();
+  }
+
+  async function move(index: number, dir: -1 | 1) {
+    const other = rows[index + dir];
+    const current = rows[index];
+    if (!other) return;
+    setError("");
+    const reordered = [...rows];
+    reordered[index] = other;
+    reordered[index + dir] = current;
+    const results = await Promise.all(
+      reordered.map((r, i) => table().update({ sort_order: i }).eq("id", r.id)),
+    );
+    const failed = results.find((r: { error: { message: string } | null }) => r.error);
+    if (failed?.error) setError(failed.error.message);
+    await refresh();
+  }
+
+  return (
+    <div className="mt-12">
+      <p className="text-xs font-bold uppercase tracking-[0.25em] text-secondary">
+        Need Blood page
+      </p>
+      <h2 className="mt-1 font-display text-2xl font-bold text-primary">Coordinators</h2>
+      <p className="mt-1 text-sm text-muted-foreground">
+        These people are shown on the public Need Blood help desk.
+      </p>
+
+      <form onSubmit={onSave} className="mt-4 flex flex-wrap items-center gap-3">
+        <input
+          value={form.name}
+          onChange={(e) => setForm({ ...form, name: e.target.value })}
+          placeholder="Name"
+          className="min-w-40 flex-1 rounded-md border border-input bg-card px-3 py-2 text-sm"
+        />
+        <input
+          value={form.area}
+          onChange={(e) => setForm({ ...form, area: e.target.value })}
+          placeholder="Area (optional)"
+          className="min-w-40 flex-1 rounded-md border border-input bg-card px-3 py-2 text-sm"
+        />
+        <input
+          value={form.phone}
+          onChange={(e) => setForm({ ...form, phone: e.target.value })}
+          placeholder="Phone e.g. +91 96337 25868"
+          inputMode="tel"
+          className="min-w-48 flex-1 rounded-md border border-input bg-card px-3 py-2 text-sm"
+        />
+        <button
+          type="submit"
+          disabled={busy}
+          className="rounded-md bg-primary px-4 py-2 text-sm font-bold text-primary-foreground disabled:opacity-60"
+        >
+          {busy ? "Saving…" : editId ? "Update" : "Add coordinator"}
+        </button>
+        {editId && (
+          <button
+            type="button"
+            onClick={resetForm}
+            className="rounded-md border border-border px-4 py-2 text-sm font-semibold"
+          >
+            Cancel
+          </button>
+        )}
+      </form>
+
+      {error && <p className="mt-3 text-sm text-destructive">{error}</p>}
+
+      {loading ? (
+        <p className="mt-4 text-sm text-muted-foreground">Loading…</p>
+      ) : rows.length === 0 ? (
+        <p className="mt-4 text-sm text-muted-foreground">No coordinators yet.</p>
+      ) : (
+        <div className="mt-4 overflow-x-auto rounded-xl border border-border bg-card shadow-card">
+          <table className="w-full text-left text-sm">
+            <tbody>
+              {rows.map((r, i) => (
+                <tr key={r.id} className="border-t border-border first:border-t-0">
+                  <td className="px-4 py-3 font-semibold text-primary">{r.name}</td>
+                  <td className="px-4 py-3 text-muted-foreground">{r.area || "—"}</td>
+                  <td className="px-4 py-3">{r.phone}</td>
+                  <td className="px-4 py-3">
+                    <div className="flex items-center justify-end gap-2 whitespace-nowrap">
+                      <button
+                        type="button"
+                        disabled={i === 0}
+                        onClick={() => move(i, -1)}
+                        aria-label="Move up"
+                        className="rounded-md border border-border px-2 py-1.5 text-xs disabled:opacity-40"
+                      >
+                        ↑
+                      </button>
+                      <button
+                        type="button"
+                        disabled={i === rows.length - 1}
+                        onClick={() => move(i, 1)}
+                        aria-label="Move down"
+                        className="rounded-md border border-border px-2 py-1.5 text-xs disabled:opacity-40"
+                      >
+                        ↓
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setEditId(r.id);
+                          setForm({ name: r.name, area: r.area, phone: r.phone });
+                        }}
+                        className="rounded-md border border-border px-3 py-1.5 text-xs font-semibold"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => onRemove(r)}
+                        className="rounded-md border border-border px-3 py-1.5 text-xs font-semibold text-destructive"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
     </div>

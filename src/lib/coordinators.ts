@@ -1,3 +1,6 @@
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+
 export type Coordinator = {
   name: string;
   area: string;
@@ -7,30 +10,51 @@ export type Coordinator = {
   tel: string;
 };
 
-export const coordinators: Coordinator[] = [
-  {
-    name: "Haris",
-    area: "Mudur",
-    display: "+91 96337 25868",
-    wa: "919633725868",
-    tel: "+919633725868",
-  },
-  {
-    name: "Nisam",
-    area: "Karuvarakundu",
-    display: "+91 96450 71082",
-    wa: "919645071082",
-    tel: "+919645071082",
-  },
-  {
-    name: "Rashid Chola",
-    area: "",
-    display: "+91 8129554442",
-    wa: "918129554442",
-    tel: "+918129554442",
-  },
-];
+export type CoordinatorRow = {
+  id: string;
+  name: string;
+  area: string;
+  phone: string;
+  sort_order: number;
+};
 
+/** Turns "+91 96337 25868" / "9633725868" into the shape the UI uses. */
+export function toCoordinator(row: Pick<CoordinatorRow, "name" | "area" | "phone">): Coordinator {
+  let digits = row.phone.replace(/\D/g, "").replace(/^0+/, "");
+  if (digits.length === 10) digits = `91${digits}`;
+  return {
+    name: row.name,
+    area: row.area,
+    display: row.phone.trim(),
+    wa: digits,
+    tel: `+${digits}`,
+  };
+}
+
+/** Coordinators managed by admins from the Admin page (Supabase table). */
+export function useCoordinators() {
+  const [data, setData] = useState<CoordinatorRow[] | undefined>(undefined);
+  const [isPending, setIsPending] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    (supabase as any)
+      .from("coordinators")
+      .select("id, name, area, phone, sort_order")
+      .order("sort_order", { ascending: true })
+      .order("created_at", { ascending: true })
+      .then(({ data, error }: { data: CoordinatorRow[] | null; error: unknown }) => {
+        if (cancelled) return;
+        if (!error) setData(data ?? []);
+        setIsPending(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  return { data, isPending };
+}
 export const bloodGroups = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"] as const;
 
 export const malappuramPlaces = [

@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { WhatsappContacts } from "@/components/whatsapp-contacts";
 import { bloodGroups } from "@/lib/coordinators";
+import banner from "@/assets/banner.webp";
 
 export const Route = createFileRoute("/need-blood")({
   head: () => ({
@@ -39,6 +40,15 @@ function NeedBloodPage() {
         city. Our volunteers will search the donor registry and connect you with a matching
         donor as fast as possible. This service is completely free.
       </p>
+      
+      <div className="mt-6 mb-8 w-full overflow-hidden rounded-xl">
+        <img
+          src={banner}
+          alt="RDS Raktha Dhona Sena Malappuram - Donate Blood, Save Lives"
+          className="block h-auto w-full object-contain"
+        />
+      </div>
+
 
       <div className="mt-8 flex flex-wrap items-center gap-3 rounded-xl border border-border bg-muted/50 p-4">
         <label htmlFor="group" className="text-sm font-semibold text-primary">

@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import hero2 from "@/assets/hero-2.webp";
-import hero3 from "@/assets/hero-3.webp";
+
 
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
@@ -15,7 +14,6 @@ import {
 } from "lucide-react";
 import hero from "@/assets/hero.webp";
 import iycLogo from "@/assets/iyc-logo.png";
-import action from "@/assets/action.webp";
 import { WhatsappContacts } from "@/components/whatsapp-contacts";
 import { bloodGroups } from "@/lib/coordinators";
 
@@ -81,23 +79,11 @@ const reasons: { icon: LucideIcon; title: string; body: string }[] = [
   },
 ];
 
-const fallbackSlides = [
-  {
-    src: hero2,
-    alt: "Indian Youth Congress rally with the national flag",
-    position: "center 20%",
-  },
-  {
-    src: hero3,
-    alt: "Indian Youth Congress leaders addressing a gathering",
-    position: "center 30%",
-  },
-];
+type HeroSlide = { src: string; alt: string; position: string };
 
 function Index() {
   const [slide, setSlide] = useState(0);
-  const [heroSlides, setHeroSlides] = useState(fallbackSlides);
-
+  const [heroSlides, setHeroSlides] = useState<HeroSlide[]>([]);
    useEffect(() => {
     supabase
       .from("hero_images")
@@ -131,49 +117,78 @@ function Index() {
 
   return (
     <div className="overflow-hidden">
-            
-            {/* HERO */}
-      <section className="relative isolate aspect-[8/3] w-full overflow-hidden bg-muted">
+
+   
+      {/* HERO */}
+      <section className="relative isolate min-h-[42rem] w-full overflow-hidden bg-primary md:aspect-[8/3] md:min-h-[34rem]">
         {heroSlides.map((s, i) => (
-          <img
+          <div
             key={i}
-            src={s.src}
-            alt={s.alt}
-            width={1920}
-            height={720}
-            className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ease-in-out ${
-              i === slide ? "opacity-100" : "opacity-0"
+            aria-hidden={i !== slide}
+            className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+              i === slide ? "opacity-100" : "pointer-events-none opacity-0"
             }`}
-          />
+          >
+            {/* Desktop blurred background */}
+            <img
+              src={s.src}
+              alt=""
+              aria-hidden="true"
+              className="absolute inset-0 hidden h-full w-full scale-110 object-cover blur-2xl md:block"
+            />
+
+            {/* Main hero image: right side on mobile, full image on desktop */}
+            <img
+              src={s.src}
+              alt={s.alt}
+              width={1920}
+              height={720}
+              className="absolute inset-0 h-full w-full object-cover object-right md:object-contain md:object-center"
+            />
+          </div>
         ))}
+
+        {/* Mobile overlay */}
+        <div className="absolute inset-0 bg-primary/70 md:hidden" />
+
+        {/* Desktop overlay */}
+        <div className="absolute inset-0 hidden bg-gradient-to-r from-primary via-primary/80 to-transparent md:block" />
+
+        {/* Hero content */}
+        <div className="relative mx-auto flex min-h-[42rem] max-w-6xl items-center px-5 py-12 text-primary-foreground sm:px-8 md:h-full md:min-h-0 md:px-4 md:py-12">
+          <div className="w-full max-w-2xl">
+            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-accent sm:text-xs sm:tracking-[0.3em]">
+              Indian Youth Congress · Malappuram
+            </p>
+
+            <h1 className="mt-4 max-w-xl font-display text-3xl font-extrabold leading-[1.15] sm:text-5xl md:text-6xl md:leading-tight">
+              One donation can give someone one more tomorrow.
+            </h1>
+
+            <p className="mt-5 max-w-xl text-sm leading-6 text-primary-foreground/90 sm:text-base sm:leading-7">
+              A few minutes of your time can make a life-changing difference. Register as a
+              voluntary blood donor and help us connect people in need with possible donor
+              support across Malappuram.
+            </p>
+
+            <div className="mt-7 flex flex-col gap-3 min-[380px]:flex-row min-[380px]:flex-wrap">
+              <Link
+                to="/donate"
+                className="inline-flex min-h-12 items-center justify-center rounded-md bg-secondary px-5 py-3 text-center font-display text-sm font-bold text-secondary-foreground transition hover:opacity-90 sm:px-6"
+              >
+                Become a Donor
+              </Link>
+
+              <Link
+                to="/need-blood"
+                className="inline-flex min-h-12 items-center justify-center rounded-md border border-primary-foreground/40 px-5 py-3 text-center font-display text-sm font-bold text-primary-foreground transition hover:bg-primary-foreground/10 sm:px-6"
+              >
+                I Need Blood Now
+              </Link>
+            </div>
+          </div>
+        </div>
       </section>
-
-      {/* IYC MALAPPURAM */}
-<section className="border-b border-border bg-white px-4 py-12 text-foreground sm:py-16">
-  <div className="mx-auto grid max-w-6xl items-center gap-8 md:grid-cols-[auto_1fr]">
-    <img
-      src={iycLogo}
-      alt="Indian Youth Congress logo"
-      width={92}
-      height={92}
-      className="h-20 w-20 rounded-full bg-primary/10 p-2 ring-1 ring-primary/20"
-    />
-    <div>
-      <p className="text-xs font-bold uppercase tracking-[0.25em] text-accent">
-        IYC Malappuram
-      </p>
-      <h2 className="mt-2 font-display text-2xl font-bold text-primary sm:text-3xl">
-        Youth participation, community service, and blood donation.
-      </h2>
-      <p className="mt-3 max-w-3xl leading-7 text-muted-foreground">
-        This initiative carries the community spirit of Indian Youth Congress into a practical
-        local service: helping voluntary donors and people seeking blood find a clearer path
-        to one another.
-      </p>
-    </div>
-  </div>
-</section>
-
       {/* WHY BLOOD DONATION MATTERS */}
       <section className="border-b border-border bg-muted/45 px-4 py-20 sm:py-24">
         <div className="mx-auto max-w-6xl">
@@ -314,14 +329,7 @@ function Index() {
 
       {/* OUR INSPIRATION */}
       <section className="border-y border-border bg-muted/45 px-4 py-20 sm:py-28">
-        <div className="mx-auto grid max-w-6xl items-center gap-10 lg:grid-cols-[0.8fr_1.2fr]">
-          <img
-            src={action}
-            alt="Shri Rahul Gandhi"
-            width={720}
-            height={297}
-            className="w-full rounded-2xl object-cover shadow-lift"
-          />
+        <div className="mx-auto grid max-w-6xl items-center gap-10">
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.25em] text-secondary">
               Our inspiration

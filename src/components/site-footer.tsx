@@ -1,7 +1,10 @@
 import { Link } from "@tanstack/react-router";
-import { coordinators } from "@/lib/coordinators";
+import { toCoordinator, useCoordinators } from "@/lib/coordinators";
 
 export function SiteFooter() {
+  const { data } = useCoordinators();
+  const coordinators = (data ?? []).map(toCoordinator);
+
   return (
     <footer className="mt-20 border-t border-border bg-primary text-primary-foreground">
       <div className="h-1 tricolour-rule" />
