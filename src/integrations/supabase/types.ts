@@ -38,45 +38,53 @@ export type Database = {
         }
         Relationships: []
       }
-      donors: {
-        Row: {
-          blood_group: string
-          created_at: string
-          date_of_birth: string | null
-          district: string
-          email: string | null
-          full_name: string
-          id: string
-          notes: string | null
-          phone: string
-          place: string
-        }
-        Insert: {
-          blood_group: string
-          created_at?: string
-          date_of_birth?: string | null
-          district?: string
-          email?: string | null
-          full_name: string
-          id?: string
-          notes?: string | null
-          phone: string
-          place: string
-        }
-        Update: {
-          blood_group?: string
-          created_at?: string
-          date_of_birth?: string | null
-          district?: string
-          email?: string | null
-          full_name?: string
-          id?: string
-          notes?: string | null
-          phone?: string
-          place?: string
-        }
-        Relationships: []
-      }
+      
+donors: {
+  Row: {
+    id: string
+    full_name: string
+    phone: string
+    email: string | null
+    blood_group: string
+    district: string
+    place: string
+    date_of_birth: string | null
+    notes: string | null
+    created_at: string
+    last_donated_at: string | null
+    donation_count: number
+  }
+  Insert: {
+    id?: string
+    full_name: string
+    phone: string
+    email?: string | null
+    blood_group: string
+    district?: string
+    place: string
+    date_of_birth?: string | null
+    notes?: string | null
+    created_at?: string
+    last_donated_at?: string | null
+    donation_count?: number
+  }
+  Update: {
+    id?: string
+    full_name?: string
+    phone?: string
+    email?: string | null
+    blood_group?: string
+    district?: string
+    place?: string
+    date_of_birth?: string | null
+    notes?: string | null
+    created_at?: string
+    last_donated_at?: string | null
+    donation_count?: number
+  }
+  Relationships: []
+}
+
       user_roles: {
         Row: {
           created_at: string

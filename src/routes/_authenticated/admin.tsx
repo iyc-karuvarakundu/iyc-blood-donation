@@ -35,12 +35,15 @@ function AdminPage() {
   const removeDonor = useServerFn(deleteDonor);
   const [group, setGroup] = useState("");
   const [search, setSearch] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   const { data, isPending, isError } = useQuery({
     queryKey: ["donors"],
     queryFn: () => fetchDonors(),
   });
 
+ 
   const donors = data?.donors ?? [];
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -53,6 +56,16 @@ function AdminPage() {
           d.phone.includes(q)),
     );
   }, [donors, group, search]);
+
+  const totalPages = Math.max(
+  1,
+  Math.ceil(filtered.length / itemsPerPage)
+);
+
+const paginatedDonors = filtered.slice(
+  (currentPage - 1) * itemsPerPage,
+  currentPage * itemsPerPage
+);
 
   async function signOut() {
     await queryClient.cancelQueries();
@@ -201,7 +214,7 @@ function AdminPage() {
             </tr>
           </thead>
           <tbody>
-            {filtered.map((d) => (
+           {paginatedDonors.map((d) => (
               <tr key={d.id} className="border-t border-border">
                 <td className="px-4 py-3 font-semibold text-primary">{d.full_name}</td>
                 <td className="px-4 py-3 font-bold text-secondary">{d.blood_group}</td>
@@ -267,6 +280,31 @@ function AdminPage() {
           </tbody>
         </table>
       </div>
+      {totalPages > 1 && (
+  <div className="mt-4 flex items-center justify-center gap-4">
+    <button
+      type="button"
+      disabled={currentPage === 1}
+      onClick={() => setCurrentPage((p) => p - 1)}
+      className="rounded-md border px-4 py-2 disabled:opacity-50"
+    >
+      Previous
+    </button>
+
+    <span className="text-sm">
+      Page {currentPage} of {totalPages}
+    </span>
+
+    <button
+      type="button"
+      disabled={currentPage === totalPages}
+      onClick={() => setCurrentPage((p) => p + 1)}
+      className="rounded-md border px-4 py-2 disabled:opacity-50"
+    >
+      Next
+    </button>
+  </div>
+)}
           <HeroImagesAdmin />
           <EventPhotosAdmin />
           <CoordinatorsAdmin />
@@ -281,6 +319,7 @@ type HeroImage = {
   storage_path: string;
   is_hero: boolean;
 };
+
 
 function HeroImagesAdmin() {
   const [images, setImages] = useState<HeroImage[]>([]);
