@@ -155,17 +155,15 @@ function Index() {
         <div className="absolute inset-0 hidden bg-gradient-to-r from-primary via-primary/80 to-transparent md:block" />
 
         {/* Hero content */}
-        <div className="relative mx-auto flex min-h-[42rem] max-w-6xl items-center px-5 py-12 text-primary-foreground sm:px-8 md:h-full md:min-h-0 md:px-4 md:py-12">
+        <div className="relative mx-auto flex min-h-[42rem] max-w-6xl items-end px-5 pb-10 pt-12 text-primary-foreground sm:px-8 md:h-full md:min-h-0 md:items-end md:px-4 md:pb-16 md:pt-12">
           <div className="w-full max-w-2xl">
             <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-accent sm:text-xs sm:tracking-[0.3em]">
               Indian Youth Congress · Malappuram
             </p>
-
-            <h1 className="mt-4 max-w-xl font-display text-3xl font-extrabold leading-[1.15] sm:text-5xl md:text-6xl md:leading-tight">
+            <h1 className="mt-3 max-w-xl font-display text-2xl font-extrabold leading-[1.15] sm:text-4xl md:text-5xl md:leading-tight">
               One donation can give someone one more tomorrow.
             </h1>
-
-            <p className="mt-5 max-w-xl text-sm leading-6 text-primary-foreground/90 sm:text-base sm:leading-7">
+            <p className="mt-4 max-w-xl text-[13px] leading-5 text-primary-foreground/90 sm:text-base sm:leading-7">
               A few minutes of your time can make a life-changing difference. Register as a
               voluntary blood donor and help us connect people in need with possible donor
               support across Malappuram.
@@ -174,7 +172,7 @@ function Index() {
             <div className="mt-7 flex flex-col gap-3 min-[380px]:flex-row min-[380px]:flex-wrap">
               <Link
                 to="/donate"
-                className="inline-flex min-h-12 items-center justify-center rounded-md bg-secondary px-5 py-3 text-center font-display text-sm font-bold text-secondary-foreground transition hover:opacity-90 sm:px-6"
+                className="inline-flex min-h-11 items-center justify-center rounded-md bg-secondary px-4 py-2.5 text-center font-display text-[13px] font-bold text-secondary-foreground transition hover:opacity-90 sm:min-h-12 sm:px-6 sm:py-3 sm:text-sm"
               >
                 Become a Donor
               </Link>
